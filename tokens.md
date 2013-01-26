@@ -1,63 +1,59 @@
 Based off of [the CCW ANTLR grammar](https://github.com/laurentpetit/ccw) 
 and the [Clojure implementation](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LispReader.java).
 
-Deviations:
- - no metadata
- - syntaxquote/unquotesplicing/unquote/quote
- - symbols aren't able to use full range of characters
- - doesn't track whether you're in a shorthand anonymous function
 
+    OPEN-PAREN    :=  '('
+    CLOSE-PAREN   :=  ')'
+    OPEN-SQUARE   :=  '['
+    CLOSE-SQUARE  :=  ']'
+    OPEN-CURLY    :=  '{'
+    CLOSE-CURLY   :=  '}'
+    AT-SIGN       :=  '@'
+    OPEN-VAR      :=  #'
+    OPEN-REGEX    :=  #"
+    OPEN-FN       :=  #(
+    OPEN-SET      :=  #{
 
-OPEN-PAREN    :=  '('
-CLOSE-PAREN   :=  ')'
-OPEN-SQUARE   :=  '['
-CLOSE-SQUARE  :=  ']'
-OPEN-CURLY    :=  '{'
-CLOSE-CURLY   :=  '}'
-AT-SIGN       :=  '@'
-OPEN-VAR      :=  #'
-OPEN-REGEX    :=  #"
-OPEN-FN       :=  #(
-OPEN-SET      :=  #{
+    Escape      :=  '\\'  ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\')
 
-Escape      :=  '\\'  ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\')
+    StringBody  :=  ( Escape  |  (not  ( '\\'  |  DQ )) )(*)
 
-StringBody  :=  ( Escape  |  (not  ( '\\'  |  DQ )) )(*)
+    SQ          :=  '\''
 
-SQ          :=  '\''
+    DQ          :=  '"'
 
-DQ          :=  '"'
+    STRING      :=  DQ  StringBody  DQ
 
-STRING      :=  DQ  StringBody  DQ
+    REGEX       :=  OPEN-REGEX  StringBody  DQ
 
-REGEX       :=  OPEN-REGEX  StringBody  DQ
+    Float       :=  Integer  '.'  Digit(*)
 
-Float       :=
+    SciNum      :=  Float  /e/i  /[-+]/(?)  Integer  
 
-Integer     :=
+    Integer     :=  Digit(+)
 
-Ratio       :=
+    Ratio       :=  Integer  '/'  Integer
 
-NUMBER      :=  Float  |  Integer  |  Ratio  |  ???
+    NUMBER      :=  ( '-'  |  '+' )(?)  ( Float  |  SciNum  |  Integer  |  Ratio  | )
 
-CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  ( 'u'  HexDigit(4) )  |  /./ )
+    CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  /./ )
+            
+    NIL         :=  'nil'
         
-NIL         :=  'nil'
-    
-BOOLEAN     :=  'true'  |  'false'
+    BOOLEAN     :=  'true'  |  'false'
 
-SymbolHead  :=   /[a-zA-Z\*\+\!\-\_\?\>\<\=\$]/
+    SymbolHead  :=   /[a-zA-Z\*\+\!\-\_\?\>\<\=\$]/
 
-SymbolRest  :=   SymbolHead  |  Digit  |  '.'
+    SymbolRest  :=   SymbolHead  |  Digit  |  '.'
 
-SymbolPart  :=  SymbolHead  SymbolRest(*)
+    SymbolPart  :=  SymbolHead  SymbolRest(*)
 
-SYMBOL      :=  '::'(?)  SymbolPart  ( '/'  SymbolPart)(*)
+    SYMBOL      :=  '::'(?)  SymbolPart  ( '/'  SymbolPart)(*)
 
-KEYWORD     :=  ':'  SYMBOL
+    KEYWORD     :=  ':'  SYMBOL
 
-Newline     :=  '\n'  |  '\r'  |  '\f'
+    Newline     :=  '\n'  |  '\r'  |  '\f'
 
-COMMENT     :=  ( ';'  |  '#!' )  (not Newline)(*)  Newline(?)
+    COMMENT     :=  ( ';'  |  '#!' )  (not Newline)(*)  Newline(?)
 
-SPACE       :=  ( ' '  |  '\t'  |  ','  |  Newline )(+)
+    SPACE       :=  ( ' '  |  '\t'  |  ','  |  Newline )(+)
