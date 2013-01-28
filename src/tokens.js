@@ -1,6 +1,6 @@
 var Tokens = (function () {
     "use strict";
-
+    
     var TOKENTYPES = {
         'open-paren'   : 1,
         'close-paren'  : 1,
@@ -38,10 +38,10 @@ var Tokens = (function () {
     
     function token(tokentype, value, meta) {
         if(!(tokentype in TOKENTYPES)) {
-            throw new Error("invalid token type: " + tokentype);
+            throw {type: 'ValueError', expected: 'valid token type', actual: tokentype};
         }
         return {
-            'type': token,
+            type: 'token',
             tokentype: tokentype,
             value: value,
             meta: meta
