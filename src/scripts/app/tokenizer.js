@@ -59,15 +59,22 @@ define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, 
         scinum = null, // TODO !!!!
         number = PC.all([sign, PC.any([float, integer, ratio, scinum])]);
         
-    // how does 'string' work with equality?  not sure if it needs to be passed a function
     var char = PC.literal('\\')
         .seq2R(PC.any([
             PC.string('newline').seq2R(PC.pure('\n')), 
             PC.string('space').seq2R(PC.pure(' ')), 
             PC.string('tab').seq2R(PC.pure('\t')), 
-            PC.item])).fmap(T.bind(null, 'char'));
-    // TODO whoa whoa whoa -- does char have to look ahead so that it can correctly identify \ab as an error?
-    //   note that this can be solved using the get/check/put parsers
+            PC.item])).fmap(T.bind(null, 'char'))
+        .seq2L(PC.get.check(function(ts) {
+            if (ts.length === 0) return true;
+            var ALLOWABLE = ' \t\n\r\f,";@^`~()[]{}\\%';
+            for(var i = 0; i < ALLOWABLE.length; i++) {
+                if(ts[0] === ALLOWABLE[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }));
     
     var nil = PC.string('nil'),
         bool = PC.string('true').plus(PC.string('false'));
@@ -93,6 +100,9 @@ define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, 
                 });
         return tests.concat([
             ['char', mPure({rest: ' bc', result: T('char', 'a')}), char.parse("\\a bc")],
+            ['char', mPure({rest: '@de', result: T('char', '\n')}), char.parse("\\newline@de")],
+            ['char -- cannot be followed by some characters', ME.zero, char.parse("\\a#bc")],
+            ['char -- cannot be followed by some characters', ME.zero, char.parse("\\abc")],
             ['escape', mPure({rest: 'ab', result: '\r'}), escape.parse('\\rab')],
             ['stringbody', mPure({rest: '"def', result: 'abc'}), stringBody.parse('abc"def')],
             ['string', mPure({rest: ' zzz', result: T('string', 'qrs"\n\\abc')}),

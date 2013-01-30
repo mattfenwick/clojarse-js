@@ -36,7 +36,8 @@ and the [Clojure implementation](https://github.com/clojure/clojure/blob/master/
 
     NUMBER      :=  ( '-'  |  '+' )(?)  ( Float  |  SciNum  |  Integer  |  Ratio  | )
 
-    CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  /./ )
+    CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  /./ )    
+      (and must be followed by one of:  ( SPACE  |  /";@^`~()[]{}\%/ )
             
     NIL         :=  'nil'
         
