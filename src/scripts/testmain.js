@@ -1,11 +1,13 @@
 
-function runTests() {
+function runTests(th) {
 
     var MODULES = [
         'libs/maybeerror',
-        'libs/parsercombs'
+        'libs/parsercombs',
+        'app/tokens',
+        'app/tokenizer'
     ];
-
+    
     require(MODULES, function() {
         var mods = Array.prototype.slice.call(arguments);
         mods.map(function(mod, ix) {
@@ -15,9 +17,16 @@ function runTests() {
                     deepEqual(testcase[1], testcase[2]);
                 });
             });
+            if ( mod.excepts ) {
+                mod.excepts.map(function(exc) {
+                    test('oops', function() {
+                        th.expectException(exc[0], exc[1], exc[2]);
+                    });
+                });
+            }
         });
     });
 }
 
 
-runTests(); // um ... why?
+runTests(TestHelper);

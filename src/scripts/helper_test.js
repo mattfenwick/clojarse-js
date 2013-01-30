@@ -15,7 +15,7 @@ var TestHelper = (function(ok, equal) {
         }
         ok(threw, "exception expected: " + message);
       if(exc) {
-          equal(exc.type, type, "exception type: " + message + "  (" + typeof(exc) + ")");
+          equal(exc.type, type, "exception type: " + message + "  (" + typeof(exc) + JSON.stringify(exc) + ")");
           if(errortype) {
               equal(exc.errortype, errortype, "exception error type: " + message);
           }

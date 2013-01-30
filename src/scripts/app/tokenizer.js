@@ -1,4 +1,4 @@
-var Tokenizer = (function (ME, PC, Tokens) {
+define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, Tokens) {
     "use strict";
     
     var T = Tokens.Token;
@@ -39,13 +39,12 @@ var Tokenizer = (function (ME, PC, Tokens) {
             // match the character and return the translation
             return PC.literal(e[0]).seq2R(PC.pure(e[1]));
         }))),
-        notSlashOrDq = PC.literal('\\').plus(dq).not1();
-
-    var sq = PC.literal("'"),
+        sq = PC.literal("'"),
         dq = PC.literal('"'),
-        stringBody = notSlashOrDq.plus(escape).many0();
+        notSlashOrDq = PC.literal('\\').plus(dq).not1(),
+        stringBody = notSlashOrDq.plus(escape).many0().fmap(function(x) {return x.join('');});
 
-    var string = dq.seq2R(stringBody).seq2L(dq);
+    var string = dq.seq2R(stringBody).seq2L(dq).fmap(T.bind(null, 'string'));
 
     var regex = openRegex.seq2R(stringBody).seq2L(dq);
 
@@ -72,14 +71,44 @@ var Tokenizer = (function (ME, PC, Tokens) {
     
     var nil = PC.string('nil'),
         bool = PC.string('true').plus(PC.string('false'));
+        
+    /* tests */
+    
+    var tests = (function() {
+        var T = Tokens.Token,
+            mPure = ME.pure;
+
+        var tests = [['open-curly',   '{'],
+                ['close-curly',  '}'],
+                ['open-paren',   '('],
+                ['close-paren',  ')'],
+                ['open-square',  '['],
+                ['close-square', ']'],
+                ['at-sign',      '@'],
+                ['open-var',     "#'"],
+                ['open-set',     '#{'],
+                ['open-fn',      '#('],
+                ['open-regex',   '#"']].map(function(x) {
+                    return ['punctuation: ' + x[0], mPure({rest: 'abc', result: T(x[0], x[1])}), punctuation.parse(x[1] + "abc")];
+                });
+        return tests.concat([
+            ['char', mPure({rest: ' bc', result: T('char', 'a')}), char.parse("\\a bc")],
+            ['escape', mPure({rest: 'ab', result: '\r'}), escape.parse('\\rab')],
+            ['stringbody', mPure({rest: '"def', result: 'abc'}), stringBody.parse('abc"def')],
+            ['string', mPure({rest: ' zzz', result: T('string', 'qrs"\n\\abc')}),
+                string.parse('"qrs\\"\\n\\\\abc" zzz')]
+        ]);
+    })();
+
 
     return {
         'tokenize':  null,
-        'punc':    punctuation,
-        'char':    char,
-        'string':  string,
-        'escape':  escape,
-        'nil':  nil
+        'punc'    :  punctuation,
+        'char'    :  char,
+        'string'  :  string,
+        'escape'  :  escape,
+        'nil'     :  nil,
+        'tests'   :  tests
     };
 
-})(MaybeError, ParserCombs, Tokens);
+});

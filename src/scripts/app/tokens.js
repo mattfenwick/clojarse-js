@@ -1,4 +1,4 @@
-var Tokens = (function () {
+define(function () {
     "use strict";
     
     var TOKENTYPES = {
@@ -47,11 +47,29 @@ var Tokens = (function () {
             meta: meta
         };
     }
+
+    /* tests */
+    
+    var i = 3,
+        tests = PRIORITIES.map(function(tt) {
+            i++;
+            return ['tokentype: ' + tt, {tokentype: tt, type: 'token', meta: i + 1, value: 'hi: ' + i}, token(tt, 'hi: ' + i, i + 1)];
+        });
+    tests.push(['number of priorities', 23, PRIORITIES.length]);
+    tests.push(['number of token types', 23, Object.keys(TOKENTYPES).length]);
+    
+    var excepts = [
+        [function() {
+            token('blargh?', 'hi');
+        }, 'ValueError', 'invalid token type causes exception']
+    ];
     
     return {
         tokentypes:  TOKENTYPES,
         priorities:  PRIORITIES,
-        Token:  token
+        Token:  token,
+        tests:  tests,
+        excepts: excepts
     };
 
-})();
+});
