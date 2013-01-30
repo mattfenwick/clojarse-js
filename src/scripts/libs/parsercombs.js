@@ -6,8 +6,16 @@ define(["libs/maybeerror"], function (MaybeError) {
         this.parse = f;
     }
     
+    function reportError(fName, type, expected, actual) {
+        throw new Error(JSON.stringify({type: type, function: fName,
+               expected: expected, actual: actual}));
+    }
+    
     // (a -> b) -> Parser t a -> Parser t b
     Parser.prototype.fmap = function(f) {
+        if(typeof f !== 'function') {
+            reportError('fmap', 'TypeError', 'function', f);
+        }
         var self = this;
         return new Parser(function(xs) {
             return self.parse(xs).fmap(function(r) {
@@ -31,6 +39,9 @@ define(["libs/maybeerror"], function (MaybeError) {
     // m a -> (a -> m b) -> m b
     // ([t] -> m ([t], a)) -> (a -> [t] -> m ([t], b)) -> [t] -> m ([t], b)
     Parser.prototype.bind = function(f) {
+        if(typeof f !== 'function') {
+            reportError('bind', 'TypeError', 'function', f);
+        }
         var self = this;
         return new Parser(function(xs) {
             var r = self.parse(xs);
@@ -42,6 +53,9 @@ define(["libs/maybeerror"], function (MaybeError) {
     };
     
     Parser.prototype.plus = function(that) {
+        if(!(that instanceof Parser)) {
+            reportError('plus', 'TypeError', 'Parser', that);
+        }
         var self = this;
         return new Parser(function(xs) {
             return self.parse(xs).plus(that.parse(xs));
@@ -61,6 +75,9 @@ define(["libs/maybeerror"], function (MaybeError) {
     
     // (e -> m) -> Parser e t a -> Parser m t a
     Parser.prototype.mapError = function(f) {
+        if(typeof f !== 'function') {
+            reportError('mapError', 'TypeError', 'function', f);
+        }
         var self = this;
         return new Parser(function(xs) {
             return self.parse(xs).mapError(f);
@@ -90,6 +107,9 @@ define(["libs/maybeerror"], function (MaybeError) {
     
     // (a -> Bool) -> Parser t a -> Parser t a
     Parser.prototype.check = function(p) {
+        if(typeof p !== 'function') {
+            reportError('check', 'TypeError', 'function', p);
+        }
         var self = this;
         return new Parser(function(xs) {
             var r = self.parse(xs);
@@ -109,6 +129,9 @@ define(["libs/maybeerror"], function (MaybeError) {
     // t -> Maybe (t -> t -> Bool) -> Parser t t    
     Parser.literal = function(x, f) {
         var eq = f ? f : equality;
+        if(typeof eq !== 'function') {
+            reportError('literal', 'TypeError', 'function', eq);
+        }
         return Parser.item.check(function (y) {
                                      return eq(x, y);
                                  });
@@ -116,6 +139,9 @@ define(["libs/maybeerror"], function (MaybeError) {
     
     // (t -> Bool) -> Parser t t
     Parser.satisfy = function(pred) {
+        if(typeof pred !== 'function') {
+            reportError('satisfy', 'TypeError', 'function', pred);
+        }
         return Parser.item.check(pred);
     };
     
@@ -161,6 +187,11 @@ define(["libs/maybeerror"], function (MaybeError) {
     
     // [Parser t a] -> Parser t [a]
     Parser.all = function(ps) {
+        ps.map(function(p) {
+            if(!(p instanceof Parser)) {
+                reportError('all', 'TypeError', 'Parser', p);
+            }
+        });
         return new Parser(function(xs) {
             var vals = [],
                 i, r,
@@ -206,10 +237,16 @@ define(["libs/maybeerror"], function (MaybeError) {
     };
     
     Parser.prototype.seq2L = function(p) {
+        if(!(p instanceof Parser)) {
+            reportError('seq2L', 'TypeError', 'Parser', p);
+        }
         return Parser.all([this, p]).fmap(function(x) {return x[0];});
     };
     
     Parser.prototype.seq2R = function(p) {
+        if(!(p instanceof Parser)) {
+            reportError('seq2R', 'TypeError', 'Parser', p);
+        }
         return Parser.all([this, p]).fmap(function(x) {return x[1];});
     };
     
@@ -233,6 +270,11 @@ define(["libs/maybeerror"], function (MaybeError) {
 
     // [Parser t a] -> Parser t a
     Parser.any = function (ps) {
+        ps.map(function(p) {
+            if(!(p instanceof Parser)) {
+                reportError('any', 'TypeError', 'Parser', p);
+            }
+        });
         return new Parser(function(xs) {
             var r = MaybeError.zero,
                 i;
@@ -305,10 +347,10 @@ define(["libs/maybeerror"], function (MaybeError) {
             ['item', item.parse(""), zero], 
             ['item', item.parse("abcde"), myPure('a', 'bcde')], 
             ['item', item.parse([1,2,3,4]), myPure(1, [2,3,4])],        
-            ['check', item.check(false).parse(""), zero],
+            ['check', item.check(fe).parse(""), zero],
             ['check', item.check(function(x) {return x > 3;}).parse([4, 5, "abc"]), myPure(4, [5, "abc"])], 
             ['check', item.check(function(y) {return y % 2 === 0;}).parse([17, 'duh']),            zero],
-            ['satisfy', sat(false).parse(""), zero],
+            ['satisfy', sat(fe).parse(""), zero],
             ['satisfy', sat(function(x) {return x > 3;}).parse([4, 5, "abc"]), myPure(4, [5, "abc"])],
             ['satisfy', sat(function(y) {return y % 2 === 0;}).parse([17, 'duh']), zero],
             ['literal', literal('a').parse(""), zero],

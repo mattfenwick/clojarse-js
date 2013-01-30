@@ -29,5 +29,4 @@ function runTests(th) {
     });
 }
 
-
 runTests(TestHelper);

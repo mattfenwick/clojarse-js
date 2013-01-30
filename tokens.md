@@ -8,23 +8,25 @@ and the [Clojure implementation](https://github.com/clojure/clojure/blob/master/
     CLOSE-SQUARE  :=  ']'
     OPEN-CURLY    :=  '{'
     CLOSE-CURLY   :=  '}'
-    AT-SIGN       :=  '@'
-    OPEN-VAR      :=  #'
-    OPEN-REGEX    :=  #"
     OPEN-FN       :=  #(
     OPEN-SET      :=  #{
+
+    AT-SIGN       :=  '@'
+    OPEN-VAR      :=  #'
+    
+    Open-Regex    :=  #"
 
     Escape      :=  '\\'  ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\')
 
     StringBody  :=  ( Escape  |  (not  ( '\\'  |  DQ )) )(*)
 
-    SQ          :=  '\''
+    Sq          :=  '\''
 
-    DQ          :=  '"'
+    Dq          :=  '"'
 
-    STRING      :=  DQ  StringBody  DQ
+    STRING      :=  Dq  StringBody  Dq
 
-    REGEX       :=  OPEN-REGEX  StringBody  DQ
+    REGEX       :=  Open-Regex  StringBody  Dq
 
     Float       :=  Integer  '.'  Digit(*)
 
