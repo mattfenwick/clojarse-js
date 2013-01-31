@@ -1,17 +1,17 @@
 
     Clojure   :=  Form(+)
         
-    Form	  :=  Literal  |  Compound  |  MacroForm
+    Form	  :=  Atom  |  Compound  |  MacroForm
 
-    Literal   :=  STRING  |  NUMBER  |  CHAR  |  NIL  |  BOOLEAN  |  KEYWORD
+    Atom      :=  SYMBOL  |  STRING  |  NUMBER  |  CHAR  |  NIL  |  BOOLEAN  |  KEYWORD
 
-    Compound  :=  List  |  Vector  |  Map  |  Set
+    Compound  :=  List  |  Vector  |  Table  |  Set
         
     List      :=  '('  Form(+)  ')'
         
     Vector    :=  '['  Form(*)  ']'
         
-    Map       :=  '{'  ( Form  Form )(*)  '}'
+    Table     :=  '{'  ( Form  Form )(*)  '}'
 
     Set       :=  '#{'  Form(*)  '}'
             
