@@ -20,4 +20,23 @@ require(imports, function(me, pc, tokens, tokenizer) {
             alert('failure: (no message provided)');
         }
     });
+    
+    $("#maketree").click(function() {
+        $("#ast").jstree({
+			"json_data" : {
+				"data" : [{
+						"data" : "A node",
+						"metadata" : { id : 23 },
+						"children" : [ "Child 1", "A Child 2", {data: 'blargh', children: ['a']}],
+						state: 'open'
+					}, {
+						"data" : {
+							"title" : "Long format demo"
+						}
+					}
+				]
+			},
+            "plugins" : [ "themes", "json_data", "ui" ]
+        });/**/
+    });
 });
