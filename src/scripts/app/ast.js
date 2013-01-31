@@ -42,26 +42,61 @@ define(function () {
     }
     
     function myList(elems) {
-    
+        if(elems.length === undefined || typeof elems === 'string') {
+            throw new Error('type error');
+        }
+        return astNode('list', elems);
     }
     
     function myVector(elems) {
-    
+        if(elems.length === undefined || typeof elems === 'string') {
+            throw new Error('type error');
+        }
+        return astNode('vector', elems);
     }
     
     function myTable(pairs) {
-    
+        if(pairs.length === undefined || typeof pairs === 'string') {
+            throw new Error('type error');
+        }
+        pairs.map(function(p) {
+            if(p.length !== 2) {
+                throw new Error('value error, needed array of length 2');
+            }
+        });
+        return astNode('table', pairs);
     }
     
     function mySet(elems) {
-    
+        if(elems.length === undefined || typeof elems === 'string') {
+            throw new Error('type error');
+        }
+        return astNode('set', elems);
     }
     
+    // TODO should this be a javascript array
+    //   or a wrapped list ?????
     function myFunction(form) {
         if(form.asttype !== 'list') {
             throw new Error('type error');
         }
         return astNode('function', form);
+    }
+    
+    function myQuote(form) {
+        return astNode('quote', form);
+    }
+    
+    function myRegex(str) {
+        if(typeof str !== 'string') {
+            throw new Error('type error');
+        }
+        return astNode('regex', str);
+    }
+    
+    // just for kicks:  var myDeref = astNode.bind(null, 'deref');
+    function myDeref(form) {
+        return astNode('deref', form);
     }
 
 
