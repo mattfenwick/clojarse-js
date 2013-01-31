@@ -2,7 +2,8 @@
 <html>
  <head>
    <title>My Clojure Parser</title>
-   <script src="scripts/jquery1.7.2.js"></script>
+   <script src="scripts/jquery.js"></script>
+   <script src="scripts/jstree/jquery.jstree.js"></script>
    <script data-main="scripts/main" src="scripts/require.js"></script>
  </head>
     
@@ -10,8 +11,11 @@
    <h1>Try me</h1>
    <textarea id="clojure"></textarea>
    <button id="doit">Click to parse Clojure</button>
+   <button id="maketree">Make the tree</button>
    <table id="output" border="2">
     <tr><th>token type</th><th>value</th></tr>
    </table>
+   <div id="ast">
+   </div>
  </body>
 </html>
