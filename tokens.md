@@ -1,6 +1,17 @@
 Based off of [the CCW ANTLR grammar](https://github.com/laurentpetit/ccw) 
 and the [Clojure implementation](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LispReader.java).
 
+Some tokens are sensitive to what they may be followed by.  
+They seem to generally require that some or any of the macro, 
+whitespace, or punctuation characters follow them.  These tokens are:
+
+ - number
+ - char
+ - symbol
+ - keyword
+ - nil
+ - boolean
+
 
     OPEN-PAREN    :=  '('
     CLOSE-PAREN   :=  ')'
@@ -39,24 +50,21 @@ and the [Clojure implementation](https://github.com/clojure/clojure/blob/master/
     NUMBER      :=  ( '-'  |  '+' )(?)  ( Float  |  SciNum  |  Integer  |  Ratio  | )
 
     CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  /./ )    
-      (and must be followed by one of:  ( SPACE  |  /";@^`~()[]{}\%/ )
             
     NIL         :=  'nil'
         
     BOOLEAN     :=  'true'  |  'false'
 
-    SymbolHead  :=   /[a-zA-Z\*\+\!\-\_\?\>\<\=\$]/
+    SymbolHead  :=  /[a-zA-Z\*\+\!\-\_\?\>\<\=\$]/
 
-    SymbolRest  :=   SymbolHead  |  Digit  |  '.'
+    SymbolRest  :=  SymbolHead  |  Digit  |  '.'  |  '/'
 
-    SymbolPart  :=  SymbolHead  SymbolRest(*)
-
-    SYMBOL      :=  '::'(?)  SymbolPart  ( '/'  SymbolPart)(*)
+    SYMBOL      :=  SymbolHead  SymbolRest(*)
 
     KEYWORD     :=  ':'  SYMBOL
 
     Newline     :=  '\n'  |  '\r'  |  '\f'
 
-    COMMENT     :=  ( ';'  |  '#!' )  (not Newline)(*)  Newline(?)
+    COMMENT     :=  ( ';'  |  '#!' )  (not Newline)(*)
 
     SPACE       :=  ( ' '  |  '\t'  |  ','  |  Newline )(+)
