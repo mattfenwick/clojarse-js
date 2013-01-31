@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
  <head>
-   <title>My Sample Project</title>
+   <title>My Clojure Parser</title>
+   <script src="scripts/jquery1.7.2.js"></script>
    <script data-main="scripts/main" src="scripts/require.js"></script>
  </head>
     
  <body>
-   <h1>My Sample Project</h1>
+   <h1>Try me</h1>
+   <textarea id="clojure"></textarea>
+   <button id="doit">Click to parse Clojure</button>
+   <table id="output" border="2">
+    <tr><th>token type</th><th>value</th></tr>
+   </table>
  </body>
 </html>
