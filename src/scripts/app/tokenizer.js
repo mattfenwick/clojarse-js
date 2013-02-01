@@ -105,9 +105,9 @@ define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, 
             .seq2L(TERMINATING_MACRO.commit('boolean format error'));
     
     var symbolHead = PC.item.check(function(c) {
-            return c.match(/^[a-zA-Z\*\+\!\-\_\?\>\<\=\$]$/);
+            return c.match(/^[a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%]$/);
         }),
-        symbolRest = PC.any([symbolHead, digit, PC.literal('.'), PC.literal('/')]),
+        symbolRest = PC.any([symbolHead, digit, PC.literal('/')]),
         symbolBody = PC.app(function(f, r) {return [f, r].join('');}, symbolHead, symbolRest.many0().fmap(joiner))
             .seq2L(TERMINATING_MACRO.commit('symbol format error')),
         symbol = symbolBody.fmap(T.bind(null, 'symbol'));
@@ -169,6 +169,7 @@ define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, 
             ['nil cannot be followed by some chars', ME.error('nil format error'), nil.parse("nil#{1}")],
             ['symbol', mPure({rest: '[]', result: T('symbol', 'a1_+-')}), symbol.parse('a1_+-[]')],
             ['symbol -- cannot be followed by some chars', ME.error('symbol format error'), symbol.parse('abc#{}')],
+            ['symbol -- dots, slashes, etc', mPure({rest: '{', result: T('symbol', '../ab.%c')}), symbol.parse('../ab.%c{')],
             ['keyword', mPure({rest: '{}', result: T('keyword', 'abc123')}), keyword.parse(':abc123{}')],
             ['keyword -- cannot be followed by some chars', ME.error('symbol format error'), keyword.parse(':abc#{}')],
             ['comment ;', mPure({rest: '\nabc', result: T('comment', 'hi!')}), comment.parse(';hi!\nabc')],

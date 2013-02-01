@@ -48,7 +48,7 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
     myForm.parse = PC.any([myString, myNumber, myChar, myNil,
         myBoolean, mySymbol, myKeyword, 
         myList, myVector, mySet, myTable,
-        myRegex, myDeref]).parse;
+        myFunction, myRegex, myDeref]).parse;
         
     var myForms = myForm.many0();
         
@@ -62,7 +62,10 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
             ['string fail', ME.zero, myString.parse([T('number', '16')])],
             ['list', ME.pure({rest: [], result: AST.list([AST.symbol('+'), AST.number(13), AST.symbol('x')])}),
                 myForm.parse([T('open-paren', '('), T('symbol', '+'), T('number', '13'),
-                              T('symbol', 'x'), T('close-paren', ')')])]
+                              T('symbol', 'x'), T('close-paren', ')')])],
+            ['function', ME.pure({rest: [], result: AST.function([AST.symbol('a'), AST.symbol('%')])}),
+                myForm.parse([T('open-fn', '#('), T('symbol', 'a'),
+                                  T('symbol', '%'), T('close-paren', ')')])]
         ];
     })();
     

@@ -70,8 +70,10 @@ define(["app/ast"], function (AST) {
     
     var tests = (function() {
         return [
-            ['symbol', {'data': 'symbol: blargh'}, convert(AST.symbol('blargh'))],
-            ['list', {data: 'list', children: [{data: 'keyword: abc'}, {data: 'number: 13'}]}, 
+            ['symbol', {'data': 'symbol: blargh', 'state': 'open'}, convert(AST.symbol('blargh'))],
+            ['list', {data: 'list', state: 'open',
+                      children: [{data: 'keyword: abc', state: 'open'}, 
+                                 {data: 'number: 13', state: 'open'}]}, 
                 convert(AST.list([AST.keyword('abc'), AST.number(13)]))]
         ];
     })();

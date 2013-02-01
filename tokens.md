@@ -55,7 +55,7 @@ whitespace, or punctuation characters follow them.  These tokens are:
         
     BOOLEAN     :=  'true'  |  'false'
 
-    SymbolHead  :=  /[a-zA-Z\*\+\!\-\_\?\>\<\=\$]/
+    SymbolHead  :=  /[a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%]/
 
     SymbolRest  :=  SymbolHead  |  Digit  |  '.'  |  '/'
 
