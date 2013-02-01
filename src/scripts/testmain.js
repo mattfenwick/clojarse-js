@@ -7,7 +7,8 @@ function runTests(th) {
         'app/tokens',
         'app/tokenizer',
         'app/ast',
-        'app/parser'
+        'app/parser',
+        'app/ast_to_jstree'
     ];
     
     require(MODULES, function() {

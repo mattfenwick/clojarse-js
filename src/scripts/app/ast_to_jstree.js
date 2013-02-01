@@ -1,4 +1,4 @@
-define(function () {
+define(["app/ast"], function (AST) {
 
     function convertList(v) {
         return {
@@ -59,16 +59,28 @@ define(function () {
     function convert(astNode) {
         var f = actions[astNode.asttype];
         if ( f ) {
-            return f(astNode.value);
+            var val = f(astNode.value);
+            val.state = 'open';
+            return val;
         }
         throw new Error('unrecognized astnode type: ' + astNode.asttype);
     }
+    
+    /* tests */
+    
+    var tests = (function() {
+        return [
+            ['symbol', {'data': 'symbol: blargh'}, convert(AST.symbol('blargh'))],
+            ['list', {data: 'list', children: [{data: 'keyword: abc'}, {data: 'number: 13'}]}, 
+                convert(AST.list([AST.keyword('abc'), AST.number(13)]))]
+        ];
+    })();
 
     return {
     
         convert:  convert,
     
-        tests:  []
+        tests:  tests
     };
 
 });

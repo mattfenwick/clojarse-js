@@ -50,6 +50,8 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
         myList, myVector, mySet, myTable,
         myRegex, myDeref]).parse;
         
+    var myForms = myForm.many0();
+        
     /* tests */
     
     var tests = (function() {
@@ -66,6 +68,7 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
     
     return {
     
+        'forms'   :  myForms,
         'form'    :  myForm,
         
         'string'  :  myString,
