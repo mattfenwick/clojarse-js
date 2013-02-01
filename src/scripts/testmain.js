@@ -5,7 +5,9 @@ function runTests(th) {
         'libs/maybeerror',
         'libs/parsercombs',
         'app/tokens',
-        'app/tokenizer'
+        'app/tokenizer',
+        'app/ast',
+        'app/parser'
     ];
     
     require(MODULES, function() {

@@ -30,9 +30,21 @@ define(function () {
         return astNode('char', chr);
     }
     
-    var myNil = astNode('nil', null),
-        myFalse = astNode('boolean', false),
-        myTrue = astNode('boolean', true);
+    var myNil = astNode('nil', null);
+    
+    function myBoolean(bool) {
+        if(typeof bool !== 'boolean') {
+            throw new Error('type error');
+        }
+        return astNode('boolean', bool);
+    }
+    
+    function mySymbol(str) {
+        if(typeof str !== 'string') {
+            throw new Error('type error');
+        }
+        return astNode('symbol', str);
+    }
     
     function myKeyword(str) {
         if(typeof str !== 'string') {
@@ -74,13 +86,11 @@ define(function () {
         return astNode('set', elems);
     }
     
-    // TODO should this be a javascript array
-    //   or a wrapped list ?????
-    function myFunction(form) {
-        if(form.asttype !== 'list') {
+    function myFunction(elems) {
+        if(elems.length === undefined || typeof elems === 'string') {
             throw new Error('type error');
         }
-        return astNode('function', form);
+        return astNode('function', elems);
     }
     
     function myQuote(form) {
@@ -106,8 +116,7 @@ define(function () {
         'number'  :  myNumber,
         'char'    :  myChar,
         'nil'     :  myNil,
-        'false'   :  myFalse,
-        'true'    :  myTrue,
+        'boolean' :  myBoolean,
         'symbol'  :  mySymbol,
         'keyword' :  myKeyword,
         
@@ -116,6 +125,7 @@ define(function () {
         'set'     :  mySet,
         'table'   :  myTable,
         
+        'function':  myFunction,
         'quote'   :  myQuote,
         'regex'   :  myRegex,
         'deref'   :  myDeref,
