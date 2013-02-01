@@ -37,4 +37,6 @@ require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst) {
         }
     });
     
+    $("#clojure").val('(f a b\n   [{:language "clojure"\n     :family "lisp"\n     :platform "jvm"} 1 2])');
+    $("#doit").click();
 });

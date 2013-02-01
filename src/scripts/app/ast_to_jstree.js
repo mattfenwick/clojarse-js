@@ -18,7 +18,8 @@ define(["app/ast"], function (AST) {
         var kids = pairs.map(function(p) {
             return {
                 'data': 'entry',
-                children: p.map(convert)
+                children: p.map(convert),
+                'state': 'open'
             };
         });
         return {
