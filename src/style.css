@@ -1,0 +1,59 @@
+
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body {
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+}
+
+body>div {
+	padding: 25px;
+}
+
+#header, #footer {
+	text-align: center;
+}
+
+#header {
+	background-color: red;
+	height: 150px;
+}
+
+#left, #right, #center {
+	min-height: 650px; /* for modern browsers */
+	height: auto !important; /* for modern browsers */
+	height: 650px; /* for IE5.x and IE6 */
+	max-height: 650px;
+	width: 30%; /*00px; */
+	float: left;
+	border: 2px solid black;
+	overflow: scroll;
+}
+
+#left {
+	background-color: #dc8;
+}
+
+#center {
+	background-color: #8cd;
+}
+
+#right {
+	background-color: #f0f;
+}
+
+#footer {
+	clear: both;
+	background-color: orange;
+	height: 100px;
+}
+
+#clojure {
+    height: 400px;
+    width: 90%;
+}

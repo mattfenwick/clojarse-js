@@ -9,13 +9,32 @@
  </head>
     
  <body>
-   <h1>Try me</h1>
-   <textarea id="clojure"></textarea>
-   <button id="doit">Click to parse Clojure</button>
-   <table id="output" border="2">
-    <tr><th>token type</th><th>value</th></tr>
-   </table>
-   <div id="ast">
+    
+   <div id="header">
+     <h1>An interactive Clojure Parser!</h1>
    </div>
+    
+   <div id="left">
+     <h1>Try me!</h1>
+     <textarea id="clojure"></textarea>
+     <button id="doit">Parse Clojure</button>
+   </div>
+    
+   <div id="center">
+     <table id="output" border="2">
+       <tr><th>token type</th><th>value</th></tr>
+     </table>
+   </div>
+    
+   <div id="right">
+    <div class="innertube">
+      <div id="ast"></div>
+    </div>
+   </div>
+    
+   <div id="footer">
+    Explanation, etc.
+   </div>
+   
  </body>
 </html>
