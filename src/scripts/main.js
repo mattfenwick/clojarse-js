@@ -24,9 +24,7 @@ require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst) {
             });
             var tree = parser.forms.parse(filterJunk(result.value.result));
             if(tree.status === 'success') {
-//                $("#ast").append(JSON.stringify(tree));
                 var conned = tree.value.result.map(a2jst.convert);
-                alert('fuck: ' + JSON.stringify(conned));
                 $("#ast").jstree({"json_data": {"data": conned},
                                   "plugins" : [ "themes", "json_data", "ui" ]});
             } else {
@@ -39,22 +37,4 @@ require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst) {
         }
     });
     
-    $("#maketree").click(function() {
-        $("#ast").jstree({
-			"json_data" : {
-				"data" : [{
-						"data" : "A node",
-						"metadata" : { id : 23 },
-						"children" : [ "Child 1", "A Child 2", {data: 'blargh', children: ['a']}],
-						state: 'open'
-					}, {
-						"data" : {
-							"title" : "Long format demo"
-						}
-					}
-				]
-			},
-            "plugins" : [ "themes", "json_data", "ui" ]
-        });/**/
-    });
 });
