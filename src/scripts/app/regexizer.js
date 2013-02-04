@@ -1,4 +1,4 @@
-define(["libs/maybeerror", "app/tokens"], function (ME, Tokens) {
+define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
     "use strict";
     
     var T = Tokens.Token;
@@ -19,9 +19,6 @@ define(["libs/maybeerror", "app/tokens"], function (ME, Tokens) {
         }
         throw new Error('invalid char escape: ' + str);
     }
-    
-    var AFTER1 = /^[ \t\n\r\f,\"\;\@\^\`\~\(\)\[\]\{\}\\\%]/, /* apparently these chars are known as 'terminating macros' ... */
-        AFTER2 = /^[ \t\n\r\f,\"\;\@\^\`\~\(\)\[\]\{\}\\\%\#\'/;
     
     // these don't correspond exactly to token types
     var REGEXES = [
@@ -54,8 +51,11 @@ define(["libs/maybeerror", "app/tokens"], function (ME, Tokens) {
         ['symbol'       ,  /^([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%0-9\/]*)/, 
                                                       tok('symbol')       ],
         ['comment'      ,  /^(?:;|#!)(.*)/,           tok('comment')      ],
-        ['space'        ,  /^((?:\s|,)+)/             tok('space')        ]
+        ['space'        ,  /^((?:\s|,)+)/,            tok('space')        ]
     ];
+    
+    var AFTER1 = /^[ \t\n\r\f,\"\;\@\^\`\~\(\)\[\]\{\}\\\%]/, /* apparently these chars are known as 'terminating macros' ... */
+        AFTER2 = /^[ \t\n\r\f,\"\;\@\^\`\~\(\)\[\]\{\}\\\%\#\']/;
     
     // the below are TOKEN TYPES ... not regexes
     var FOLLOWING = {
@@ -66,24 +66,107 @@ define(["libs/maybeerror", "app/tokens"], function (ME, Tokens) {
         'keyword' :  AFTER1,
         'symbol'  :  AFTER1
     };
+
+    function tokenError(message, line, column, rest) {
+        return MaybeError.error({
+            message  :  message,
+            line     :  line,
+            column   :  column,
+            rest     :  rest
+        });
+    }
     
-    
-    function scanner(str) {
-        // repeatedly:
-        //  - match a regex
-        //  - check that the remaining chars are fine. possibilities:
-        //    - nothing left:  pass
-        //    - anything is fine:  pass
-        //    - next chars are fine: pass
-        //    - next chars are not fine:  fail
-        //  - count line/column consumed
-        //  - construct a new token with:
-        //    - line, column, tokentype, value
+    function countLCs(string) {
+        var lines = 0,
+            columns = 0,
+            i;
+        for(i = 0; i < string.length; i++) {
+            if(string[i] === '\n') {
+                lines++;
+                columns = 0;
+            } else {
+                columns++;
+            }
+        }
+        return [lines, columns];
     }
 
+    //   error if:
+    //      string or regex is started but not stopped
+    //   or if the input doesn't match any token definitions
+    function nextToken(string, line, column) {
+        var match, i,
+            name, regex, action,
+            res, count,
+            newLine, newCol,
+            rest, regexA;
+
+        // 0. empty string
+        if (string === "") {
+            return MaybeError.zero;
+        }
+        
+        for(i = 0; i < REGEXES.length; i++) {
+            name = REGEXES[i][0];
+            regex = REGEXES[i][1];
+            action = REGEXES[i][2];
+            if(match = string.match(REGEXES[i][1])) {
+                count = countLCs(match[0]);
+                newLine = line + count[0];
+                newCol = ((count[0] > 0) ? 1 : column) + count[1];
+                rest = string.substring(match[0].length);
+                regexA = FOLLOWING[name];
+                // if we do care what follows, something follows, and what's following isn't good:
+                if(regexA && rest && !rest.match(regexA)) {
+                    return tokenError('invalid characters following token', newLine, newCol, string);
+                }
+                return MaybeError.pure({
+                    'token' : action(match[1], {line: line, column: column}),
+                    'rest'  : rest,
+                    'line'  : newLine,
+                    'column': newCol
+                });
+            }
+        }
+        
+        if (string[0] === '"') { // this is special-cased to provide better error reporting
+            return tokenError("end-of-string not found", line, column, string);
+        }
+        
+        if (string.slice(0, 2) === '#"') { // open-regex
+            return tokenError("end-of-regex not found", line, column, string);
+        }
+
+        return tokenError("no tokens matched", line, column, string);
+    }
+    
+    // must parse entire string to succeed
+    function tokenize(string) {
+        var tokens = [],
+            next,
+            line = 1,
+            column = 1;
+        while (1) {
+            next = nextToken(string, line, column);
+            if(next.status === 'error') {
+                return MaybeError.error({
+                    error :  next.value,
+                    tokens:  tokens
+                });
+            } else if(next.status === 'failure') {
+                break;
+            }
+            // otherwise it must be success
+            tokens.push(next.value.token);
+            string = next.value.rest;
+            line = next.value.line;
+            column = next.value.column;
+        }
+        return MaybeError.pure(tokens);
+    }
 
     return {
-        'scanner' :  scanner,
+        'scanner' :  tokenize,
         'regexes' :  REGEXES
     };
 

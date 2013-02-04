@@ -2,10 +2,10 @@ var imports = [
     "libs/maybeerror", "libs/parsercombs",
     "app/tokens", "app/tokenizer",
     "app/ast", "app/parser",
-    "app/ast_to_jstree"
+    "app/ast_to_jstree", "app/regexizer"
 ];
 
-require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst) {
+require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst, regs) {
     function filterJunk(tokens) {
         return tokens.filter(function(t) {
             return (t.tokentype !== 'space') && (t.tokentype !== 'comment');
