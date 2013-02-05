@@ -12,20 +12,21 @@ require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst, regs) {
         });
     }
 
-    $("#doit").click(function() {
-        var text = $("#clojure").val(),
+    $("#parse").click(function() {
+        var text = $("#input").val(),
             result = regs.scanner(text),
-            out = $("#output"),
+            out = $("#tokens"),
             ast = $("#ast");
         out.empty();
         ast.empty();
         out.append("<tr><th>token type</th><th>value</th><th>Line</th><th>Column</th></tr>");
         if(result.status === 'success') {
-            result.value.map(function(t) {
+            var goodTokens = filterJunk(result.value);
+            goodTokens.map(function(t) {
                 out.append(["<tr><td>", t.tokentype, "</td><td>", t.value, "</td><td>", 
                                         t.meta.line, "</td><td>", t.meta.column, "</td></tr>"].join(''));
             });
-            var tree = parser.forms.parse(filterJunk(result.value));
+            var tree = parser.forms.parse(goodTokens);
             if(tree.status === 'success') { // what about if there's some tokens unconsumed?
                 var conned = tree.value.result.map(a2jst.convert);
                 ast.jstree({"json_data": {"data": conned},
@@ -45,6 +46,6 @@ require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst, regs) {
         }
     });
     
-    $("#clojure").val('(f a b\n   [{:language "clojure"\n     :family "lisp"\n     :platform "jvm"} 1 2])');
-    $("#doit").click();
+    $("#input").val('(f a b\n   [{:language "clojure"\n     :family "lisp"\n     :platform "jvm"} 1 2])');
+    $("#parse").click();
 });
