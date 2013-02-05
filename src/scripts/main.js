@@ -14,24 +14,32 @@ require(imports, function(me, pc, tokens, tokenizer, ast, parser, a2jst, regs) {
 
     $("#doit").click(function() {
         var text = $("#clojure").val(),
-            result = tokenizer.scanner.parse(text),
-            out = $("#output");
+            result = regs.scanner(text),
+            out = $("#output"),
+            ast = $("#ast");
         out.empty();
-        out.append("<tr><th>token type</th><th>value</th></tr>");
+        ast.empty();
+        out.append("<tr><th>token type</th><th>value</th><th>Line</th><th>Column</th></tr>");
         if(result.status === 'success') {
-            result.value.result.map(function(t) {
-                out.append(["<tr><td>", t.tokentype, "</td><td>", t.value, "</td></tr>"].join(''));
+            result.value.map(function(t) {
+                out.append(["<tr><td>", t.tokentype, "</td><td>", t.value, "</td><td>", 
+                                        t.meta.line, "</td><td>", t.meta.column, "</td></tr>"].join(''));
             });
-            var tree = parser.forms.parse(filterJunk(result.value.result));
-            if(tree.status === 'success') {
+            var tree = parser.forms.parse(filterJunk(result.value));
+            if(tree.status === 'success') { // what about if there's some tokens unconsumed?
                 var conned = tree.value.result.map(a2jst.convert);
-                $("#ast").jstree({"json_data": {"data": conned},
+                ast.jstree({"json_data": {"data": conned},
                                   "plugins" : [ "themes", "json_data", "ui" ]});
             } else {
                 alert("parsing failed");
             }
         } else if(result.status === 'error') {
-            alert('error: ' + JSON.stringify(result.value));
+            result.value.tokens.map(function(t) {
+                out.append(["<tr><td>", t.tokentype, "</td><td>", t.value, "</td><td>", 
+                                        t.meta.line, "</td><td>", t.meta.column, "</td></tr>"].join(''));
+            });
+            var e = result.value.error;
+            out.append(["<tr><td>", "ERROR", "</td><td>", e.message, '</td><td>', e.line, '</td><td>', e.column, '</td></tr>'].join(''));
         } else {
             alert('failure: (no message provided)');
         }
