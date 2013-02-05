@@ -29,6 +29,10 @@ function runTests(th) {
                 });
             }
         });
+        
+        require(["app/regexizer", "test/app/regexizer"], function(regs, test_regs) {
+            test_regs(regs);
+        });
     });
 }
 
