@@ -19,6 +19,35 @@ define(["app/tokens", "app/ast", "libs/maybeerror", "libs/parsercombs", "app/par
                 propEqual(x[1], x[2], x[0]);
             });
         });
+        
+        test('unconsumed input remaining', function() {
+            // not sure what example would produce unconsumed output
+        });
+        
+        test('unmatched close delimiter', function() {
+            // "abc ]"
+        });
+
+        test('unmatched open delimiter', function() {
+            // "abc (f 123"
+        });
+
+        test('nested errors -- innermost wins', function() {
+            // "(abc [123"  -- report square-bracket error
+        });
+        
+        test('metadata must be symbol, keyword, string, map', function() {
+            
+        });
+        
+        test('@ deref -- must be what ???', function() {
+        
+        });
+        
+        test("many nested delimiters, finally one's unmatched -- what to report?", function() {
+            // something like:   [[[]]) <-- report missing ]?  or extra ) -- which is the Clojure behavior?
+        });
+
     };
 
 });
