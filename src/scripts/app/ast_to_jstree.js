@@ -67,23 +67,8 @@ define(["app/ast"], function (AST) {
         throw new Error('unrecognized astnode type: ' + astNode.asttype);
     }
     
-    /* tests */
-    
-    var tests = (function() {
-        return [
-            ['symbol', {'data': 'symbol: blargh', 'state': 'open'}, convert(AST.symbol('blargh'))],
-            ['list', {data: 'list', state: 'open',
-                      children: [{data: 'keyword: abc', state: 'open'}, 
-                                 {data: 'number: 13', state: 'open'}]}, 
-                convert(AST.list([AST.keyword('abc'), AST.number(13)]))]
-        ];
-    })();
-
     return {
-    
         convert:  convert,
-    
-        tests:  tests
     };
 
 });

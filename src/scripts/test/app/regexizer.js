@@ -1,16 +1,16 @@
-define(["libs/maybeerror", "app/tokens"], function (ME, Tokens) {
+define(["libs/maybeerror", "app/tokens", "app/regexizer"], function (ME, Tokens, R) {
 
-    return function (R) {
+    /* tests:
+       1. token definitions
+       2. line/cols
+       3. error messages
+         - unclosed string/regex
+         - no token possible
+         - bad following chars
+       5. following chars
+    */
     
-        /* tests:
-           1. token definitions
-           2. line/cols
-           3. error messages
-             - unclosed string/regex
-             - no token possible
-             - bad following chars
-           5. following chars
-        */
+    return function() {
         
         module("regexizer");
         var scanner = R.scanner,
@@ -116,7 +116,7 @@ define(["libs/maybeerror", "app/tokens"], function (ME, Tokens) {
                       "invalid char escape");
                         
             // not sure if I can even hit this error -- what are some invalid chars in clojure ?? :            
-//            deepEqual(err({error: {}, tokens: []}), scanner(), 'no matching token found');
+    //            deepEqual(err({error: {}, tokens: []}), scanner(), 'no matching token found');
         });
     };
 

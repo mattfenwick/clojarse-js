@@ -128,9 +128,7 @@ define(function () {
         'function':  myFunction,
         'quote'   :  myQuote,
         'regex'   :  myRegex,
-        'deref'   :  myDeref,
-    
-        tests:  []
+        'deref'   :  myDeref
     };
 
 });

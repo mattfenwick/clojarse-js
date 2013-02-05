@@ -132,83 +132,6 @@ define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, 
             comment, space
         ]),
         scanner = token.many0();
-        
-    /* tests */
-    
-    var tests = (function() {
-        var mPure = ME.pure;
-
-        var tests = [['open-curly',   '{'],
-                ['close-curly',  '}'],
-                ['open-paren',   '('],
-                ['close-paren',  ')'],
-                ['open-square',  '['],
-                ['close-square', ']'],
-                ['open-fn',      '#('],
-                ['open-set',     '#{']].map(function(x) {
-                    return ['punctuation: ' + x[0], mPure({rest: 'abc', result: T(x[0], x[1])}), punctuation.parse(x[1] + "abc")];
-                });
-        tests = tests.concat([
-            ['at-sign', mPure({rest: 'd', result: T('at-sign', '@')}), atSign.parse("@d")],
-            ['open-var', mPure({rest:'ouch', result: T('open-var', "#'")}), openVar.parse("#'ouch")],
-            ['char', mPure({rest: ' bc', result: T('char', 'a')}), char.parse("\\a bc")],
-            ['char', mPure({rest: '@de', result: T('char', '\n')}), char.parse("\\newline@de")],
-            ['char -- cannot be followed by some characters', ME.error('char format error'), char.parse("\\a#bc")],
-            ['char -- cannot be followed by some characters', ME.error('char format error'), char.parse("\\abc")],
-            ['escape', mPure({rest: 'ab', result: '\r'}), escape.parse('\\rab')],
-            ['stringbody', mPure({rest: '"def', result: 'abc'}), stringBody.parse('abc"def')],
-            ['string', mPure({rest: ' zzz', result: T('string', 'qrs"\n\\abc')}),
-                string.parse('"qrs\\"\\n\\\\abc" zzz')],
-            ['regex', mPure({rest: 'blargh', result: T('regex', 'uh\noh')}), 
-                regex.parse('#"uh\noh"blargh')],
-            ['number -- float', mPure({rest: ';abc', result: T('number', '412.34')}), number.parse("412.34;abc")],
-            ['bool -- true', mPure({rest: '%abc', result: T('boolean', 'true')}), bool.parse('true%abc')],
-            ['bool -- false', mPure({rest: ' \t', result: T('boolean', 'false')}), bool.parse('false \t')],
-            ["bools can't be followed by some chars", ME.error('boolean format error'), bool.parse("false'a")],
-            ['nil', mPure({rest: '[]', result: T('nil', 'nil')}), nil.parse('nil[]')],
-            ['nil cannot be followed by some chars', ME.error('nil format error'), nil.parse("nil#{1}")],
-            ['symbol', mPure({rest: '[]', result: T('symbol', 'a1_+-')}), symbol.parse('a1_+-[]')],
-            ['symbol -- cannot be followed by some chars', ME.error('symbol format error'), symbol.parse('abc#{}')],
-            ['symbol -- dots, slashes, etc', mPure({rest: '{', result: T('symbol', '../ab.%c')}), symbol.parse('../ab.%c{')],
-            ['keyword', mPure({rest: '{}', result: T('keyword', 'abc123')}), keyword.parse(':abc123{}')],
-            ['keyword -- cannot be followed by some chars', ME.error('symbol format error'), keyword.parse(':abc#{}')],
-            ['comment ;', mPure({rest: '\nabc', result: T('comment', 'hi!')}), comment.parse(';hi!\nabc')],
-            ['comment #!', mPure({rest: '', result: T('comment', 'uh-oh')}), comment.parse('#!uh-oh')],
-            ['space', mPure({rest: '123', result: T('space', '\t, \n\r\f')}), space.parse('\t, \n\r\f123')],
-            ['token -- nil', mPure({rest: ';okay', result: T('nil', 'nil')}), token.parse('nil;okay')]
-        ]);
-        return tests.concat([['tokens -- all',
-            mPure({rest: '', 
-                   result: [
-                       T('number', '123'),
-                       T('open-square', '['),
-                       T('nil', 'nil'),
-                       T('open-curly', '{'),
-                       T('boolean', 'true'),
-                       T('open-paren', '('),
-                       T('symbol', 'abc'),
-                       T('close-square', ']'),
-                       T('boolean', 'false'),
-                       T('close-curly', '}'),
-                       T('comment', 'oo'),
-                       T('space', '\n'),
-                       T('open-set', '#{'),
-                       T('string', 'blar'),
-                       T('regex', 'nuff'),
-                       T('space', '  '),
-                       T('keyword', 'non'),
-                       T('char', 'q'),
-                       T('close-paren', ')'),
-                       T('open-fn', '#('),
-                       T('at-sign', '@'),
-                       T('open-var', "#'"),
-                       T('space', ' '),
-                       T('number', '3.2')
-                   ]}),
-            scanner.parse('123[nil{true(abc]false};oo\n#{"blar"#"nuff"  :non\\q)#(@#\' 3.2')
-        ]]);
-    })();
-
 
     return {
         
@@ -227,10 +150,7 @@ define(["libs/maybeerror", "libs/parsercombs", "app/tokens"], function (ME, PC, 
         'space'   :  space,
 
         // 'private' parsers
-        'escape'  :  escape,
-
-        // other
-        'tests'   :  tests
+        'escape'  :  escape
     };
 
 });

@@ -52,23 +52,6 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
         
     var myForms = myForm.many0();
         
-    /* tests */
-    
-    var tests = (function() {
-        var T = TS.Token;
-        return [
-            ['string', ME.pure({rest: [T('number', '32')], result: AST.string('abc')}), 
-                myString.parse([T('string', 'abc'), T('number', '32')])],
-            ['string fail', ME.zero, myString.parse([T('number', '16')])],
-            ['list', ME.pure({rest: [], result: AST.list([AST.symbol('+'), AST.number(13), AST.symbol('x')])}),
-                myForm.parse([T('open-paren', '('), T('symbol', '+'), T('number', '13'),
-                              T('symbol', 'x'), T('close-paren', ')')])],
-            ['function', ME.pure({rest: [], result: AST.function([AST.symbol('a'), AST.symbol('%')])}),
-                myForm.parse([T('open-fn', '#('), T('symbol', 'a'),
-                                  T('symbol', '%'), T('close-paren', ')')])]
-        ];
-    })();
-    
     return {
     
         'forms'   :  myForms,
@@ -90,9 +73,7 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
         'function':  myFunction,
         'quote'   :  myQuote,
         'regex'   :  myRegex,
-        'deref'   :  myDeref,
-    
-        tests:  tests
+        'deref'   :  myDeref
     };
 
 });
