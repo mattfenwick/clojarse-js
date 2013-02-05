@@ -37,9 +37,9 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         // 'regex' regex same but starts with #
         ['regex'        ,  /^#"((?:[^\\\"]|\\[btnfr\"\'\\])*)"/,
                                                       tok('regex')        ],
-        ['integer'      ,  /^([\+\-]?\d+)/,           tok('number')       ],
         ['float'        ,  /^([\+\-]?\d+\.\d*)/,      tok('number')       ],
         ['ratio'        ,  /^([\+\-]?\d+\/\d+)/,      tok('number')       ],
+        ['integer'      ,  /^([\+\-]?\d+)/,           tok('number')       ],
         // TODO scinum
         ['char-long'    ,  /^\\(newline|space|tab)/,  fChar               ],
         ['char-short'   ,  /^\\(.|\n|\r|\f)/,         tok('char')         ],
@@ -57,14 +57,16 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
     var AFTER1 = /^[ \t\n\r\f,\"\;\@\^\`\~\(\)\[\]\{\}\\\%]/, /* apparently these chars are known as 'terminating macros' ... */
         AFTER2 = /^[ \t\n\r\f,\"\;\@\^\`\~\(\)\[\]\{\}\\\%\#\']/;
     
-    // the below are TOKEN TYPES ... not regexes
     var FOLLOWING = {
-        'number'  :  AFTER2,
-        'char'    :  AFTER1,
-        'nil'     :  AFTER1,
-        'boolean' :  AFTER1,
-        'keyword' :  AFTER1,
-        'symbol'  :  AFTER1
+        'integer'     :  AFTER2,
+        'float'       :  AFTER2,
+        'ratio'       :  AFTER2,
+        'char-long'   :  AFTER1,
+        'char-short'  :  AFTER1,
+        'nil'         :  AFTER1,
+        'boolean'     :  AFTER1,
+        'keyword'     :  AFTER1,
+        'symbol'      :  AFTER1
     };
 
     function tokenError(message, line, column, rest) {
@@ -118,7 +120,7 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
                 regexA = FOLLOWING[name];
                 // if we do care what follows, something follows, and what's following isn't good:
                 if(regexA && rest && !rest.match(regexA)) {
-                    return tokenError('invalid characters following token', newLine, newCol, string);
+                    return tokenError('invalid following characters', newLine, newCol, rest);
                 }
                 return MaybeError.pure({
                     'token' : action(match[1], {line: line, column: column}),
@@ -135,6 +137,10 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         
         if (string.slice(0, 2) === '#"') { // open-regex
             return tokenError("end-of-regex not found", line, column, string);
+        }
+        
+        if (string[0] === '\\') { // char 
+            return tokenError("invalid character", line, column, string);
         }
 
         return tokenError("no tokens matched", line, column, string);
