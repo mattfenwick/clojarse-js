@@ -1,73 +1,76 @@
 define(function () {
     "use strict";
     
-    function astNode(asttype, value) {
+    function astNode(asttype, value, meta) {
         return {
             type: 'astnode',
             asttype: asttype,
-            value: value
+            value: value,
+            meta: meta
         };
     }
         
-    function myString(str) {
+    function myString(str, meta) {
         if(typeof str !== 'string') {
             throw new Error('type error');
         }
-        return astNode('string', str);
+        return astNode('string', str, meta);
     }
     
-    function myNumber(num) {
+    function myNumber(num, meta) {
         if(typeof num !== 'number') {
             throw new Error('type error');
         }
-        return astNode('number', num);
+        return astNode('number', num, meta);
     }
     
-    function myChar(chr) {
+    function myChar(chr, meta) {
         if(typeof chr !== 'string' || chr.length !== 1) {
             throw new Error('type error');
         }
-        return astNode('char', chr);
+        return astNode('char', chr, meta);
     }
     
-    var myNil = astNode('nil', null);
+    function myNil(meta) {
+        return astNode('nil', null, meta);
+    }
     
-    function myBoolean(bool) {
+    function myBoolean(bool, meta) {
         if(typeof bool !== 'boolean') {
             throw new Error('type error');
         }
-        return astNode('boolean', bool);
+        return astNode('boolean', bool, meta);
     }
     
-    function mySymbol(str) {
+    function mySymbol(str, meta) {
         if(typeof str !== 'string') {
             throw new Error('type error');
         }
-        return astNode('symbol', str);
+        return astNode('symbol', str, meta);
     }
     
-    function myKeyword(str) {
+    function myKeyword(str, meta) {
         if(typeof str !== 'string') {
             throw new Error('type error');
         }
-        return astNode('keyword', str);
+        return astNode('keyword', str, meta);
     }
     
-    function myList(elems) {
+    function myList(elems, meta) {
         if(elems.length === undefined || typeof elems === 'string') {
             throw new Error('type error');
         }
-        return astNode('list', elems);
+        return astNode('list', elems, meta);
     }
     
-    function myVector(elems) {
+    function myVector(elems, meta) {
         if(elems.length === undefined || typeof elems === 'string') {
             throw new Error('type error');
         }
-        return astNode('vector', elems);
+        return astNode('vector', elems, meta);
     }
     
-    function myTable(pairs) {
+    function myTable(pairs, meta) {
         if(pairs.length === undefined || typeof pairs === 'string') {
             throw new Error('type error');
         }
@@ -76,37 +79,37 @@ define(function () {
                 throw new Error('value error, needed array of length 2');
             }
         });
-        return astNode('table', pairs);
+        return astNode('table', pairs, meta);
     }
     
-    function mySet(elems) {
+    function mySet(elems, meta) {
         if(elems.length === undefined || typeof elems === 'string') {
             throw new Error('type error');
         }
-        return astNode('set', elems);
+        return astNode('set', elems, meta);
     }
     
-    function myFunction(elems) {
+    function myFunction(elems, meta) {
         if(elems.length === undefined || typeof elems === 'string') {
             throw new Error('type error');
         }
-        return astNode('function', elems);
+        return astNode('function', elems, meta);
     }
     
-    function myQuote(form) {
-        return astNode('quote', form);
+    function myQuote(form, meta) {
+        return astNode('quote', form, meta);
     }
     
-    function myRegex(str) {
+    function myRegex(str, meta) {
         if(typeof str !== 'string') {
             throw new Error('type error');
         }
-        return astNode('regex', str);
+        return astNode('regex', str, meta);
     }
     
     // just for kicks:  var myDeref = astNode.bind(null, 'deref');
-    function myDeref(form) {
-        return astNode('deref', form);
+    function myDeref(form, meta) {
+        return astNode('deref', form, meta);
     }
 
 

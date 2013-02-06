@@ -1,49 +1,79 @@
 define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], function (ME, PC, AST, TS) {
     "use strict";
 
-    function tokentype(ttype) {
-        return PC.item.bind(function(t) {
-            if(t.tokentype === ttype) {
-                return PC.pure(t.value);
-            }
-            return PC.zero;
-        });
+    function tokentype(type) {
+        return PC.satisfy(
+            function(t) {
+                return t.tokentype === type;
+            });
+    }
+    
+    function metaF(f) {
+        return function(t) {
+            return f(t.value, t.meta);
+        };
     }
     
     var myForm = new PC(function() {}); // a 'forward declaration'
     
-    var myString   =  tokentype('string').fmap(AST.string),
-        myNumber   =  tokentype('number').fmap(parseFloat).fmap(AST.number),
-        myChar     =  tokentype('char').fmap(AST.char),
-        myNil      =  tokentype('nil').seq2R(PC.pure(AST.nil)),
-        myBoolean  =  tokentype('boolean').fmap(AST.boolean),
-        mySymbol   =  tokentype('symbol').fmap(AST.symbol),
-        myKeyword  =  tokentype('keyword').fmap(AST.keyword);
+    function boolAction(t) {
+        var val = true;
+        if(t.value === 'false') {
+            val = false;
+        } else if(t.value !== 'true') {
+            throw new Error('invalid boolean: ' + t.value);
+        }
+        return AST.boolean(val, t.meta);
+    }
     
-    var myList = tokentype('open-paren')
-            .seq2R(myForm.many0())
-            .seq2L(tokentype('close-paren'))
-            .fmap(AST.list),
-        myVector = tokentype('open-square')
-            .seq2R(myForm.many0())
-            .seq2L(tokentype('close-square'))
-            .fmap(AST.vector),
-        mySet = tokentype('open-set')
-            .seq2R(myForm.many0())
-            .seq2L(tokentype('close-curly'))
-            .fmap(AST.set),
-        myTable = tokentype('open-curly')
-            .seq2R(PC.all([myForm, myForm]).many0())
-            .seq2L(tokentype('close-curly'))
-            .fmap(AST.table);
+    var myString   =  tokentype('string').fmap(metaF(AST.string)),
+        myNumber   =  tokentype('number').fmap(function(t) {return AST.number(parseFloat(t.value), t.meta);}),
+        myChar     =  tokentype('char').fmap(metaF(AST.char)),
+        myNil      =  tokentype('nil').fmap(function(t) {return AST.nil(t.meta);}),
+        myBoolean  =  tokentype('boolean').fmap(boolAction),
+        mySymbol   =  tokentype('symbol').fmap(metaF(AST.symbol)),
+        myKeyword  =  tokentype('keyword').fmap(metaF(AST.keyword));
     
-    var myFunction = tokentype('open-fn')
-            .seq2R(myForm.many0())
-            .seq2L(tokentype('close-paren'))
-            .fmap(AST.function),
+    // return value's meta is the meta of the 'start' parser
+    function delimited(start, middle, end, rule) {
+        return start.bind(
+            function(t) {
+                return middle
+                    .seq2L(end)
+                    .fmap(function(a) {a.meta = t.meta; return a;}) // oops, mutation.  sorry
+                    .commit({meta: t.meta, rule: rule});
+            });
+    };
+    
+    var myList = delimited(
+            tokentype('open-paren'),
+            myForm.many0().fmap(AST.list),
+            tokentype('close-paren'),
+            'list'),
+        myVector = delimited(
+            tokentype('open-square'),
+            myForm.many0().fmap(AST.vector),
+            tokentype('close-square'),
+            'vector'),
+        mySet = delimited(
+            tokentype('open-set'),
+            myForm.many0().fmap(AST.set),
+            tokentype('close-curly'),
+            'set'),
+        myTable = delimited(
+            tokentype('open-curly'),
+            PC.all([myForm, myForm]).many0().fmap(AST.table),
+            tokentype('close-curly'),
+            'table');
+    
+    var myFunction = delimited(
+            tokentype('open-fn'),
+            myForm.many0().fmap(AST.function),
+            tokentype('close-paren'),
+            'function'),
         myQuote = null, // TODO ??
-        myRegex = tokentype('regex').fmap(AST.regex),
-        myDeref = tokentype('at-sign').seq2R(myForm).fmap(AST.deref);
+        myRegex = tokentype('regex').fmap(metaF(AST.regex)),
+        myDeref = PC.app(function(a, f) {return AST.deref(f, a.meta);}, tokentype('at-sign'), myForm);
         
     myForm.parse = PC.any([myString, myNumber, myChar, myNil,
         myBoolean, mySymbol, myKeyword, 

@@ -5,9 +5,9 @@ var NEW_TESTS = [
     'test/app/tokens',
     "test/app/regexizer",
     "test/app/tokenizer",
+    'test/app/ast',
     'test/app/parser',
-    'test/app/ast_to_jstree'
-//        'app/ast', // TODO no tests yet
+    'test/app/ast_to_jstree',
 ];
 
 require(NEW_TESTS, function() {
