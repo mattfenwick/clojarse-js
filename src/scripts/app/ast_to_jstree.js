@@ -46,6 +46,7 @@ define(["app/ast"], function (AST) {
         'nil'    :  function() {return {'data': 'nil'};},
         'boolean':  function(v) {return {'data': 'boolean: ' + v};},
         'string' :  function(v) {return {'data': 'string: ' + v};},
+        'regex'  :  function(v) {return {'data': 'regex: ' + v};},
         'number' :  function(v) {return {'data': 'number: ' + v};},
         'symbol' :  function(v) {return {'data': 'symbol: ' + v};},
         'keyword':  function(v) {return {'data': 'keyword: ' + v};},
