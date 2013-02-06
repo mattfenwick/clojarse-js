@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
-   <title>My Clojure Parser</title>
+   <title>An Interactive Clojure Parser</title>
    <script src="scripts/jquery.js"></script>
    <script src="scripts/jstree/jquery.jstree.js"></script>
    <script data-main="scripts/main" src="scripts/require.js"></script>
@@ -11,30 +11,31 @@
  <body>
     
    <div id="header">
-     <h1>An interactive Clojure Parser!</h1>
+     CloJarse
    </div>
     
-   <div id="left">
-     <h1>Try me!</h1>
+   <div id="divinput">
      <textarea id="input"></textarea>
-     <button id="parse">Parse Clojure</button>
+     <button id="parse">Try me!</button>
    </div>
-    
-   <div id="center">
-     <table id="tokens" border="2">
-      <thead>
-       <tr><th>token type</th><th>value</th><th>Line</th><th>Column</th></tr>
-      </thead>
-      <tbody>
-      </tbody>
-     </table>
-   </div>
-    
-   <div id="right">
-    <div class="innertube">
-      <div id="ast"></div>
+
+   <div id="divoutput">
+    <div id="divtokens">
+      <table id="tokens" border="2">
+       <thead>
+        <tr><th>token type</th><th>value</th><th>Line</th><th>Column</th></tr>
+       </thead>
+       <tbody>
+       </tbody>
+      </table>
     </div>
+
+    <div id="divast">
+       <div id="ast"></div>
+    </div>
+    <div class="end"></div>
    </div>
+    
     
    <div id="footer">
     Explanation, etc.

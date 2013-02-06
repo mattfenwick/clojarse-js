@@ -21,30 +21,31 @@ body>div {
 
 #header {
 	background-color: red;
-	height: 150px;
+	height: 75px;
+    font-size: 36px;
 }
 
-#left, #right, #center {
-	min-height: 650px; /* for modern browsers */
-	height: auto !important; /* for modern browsers */
-	height: 650px; /* for IE5.x and IE6 */
-	max-height: 650px;
-	width: 30%; /*00px; */
-	float: left;
-	border: 2px solid black;
+#divinput {
+    width: 60%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+#divoutput {
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+#divtokens, #divast {
+    width: 50%;
+    float: left;
 	overflow: scroll;
+    max-height: 400px;
 }
 
-#left {
-	background-color: #dc8;
-}
-
-#center {
-	background-color: #8cd;
-}
-
-#right {
-	background-color: #f0f;
+.end {
+    clear: both;
 }
 
 #footer {
@@ -54,6 +55,13 @@ body>div {
 }
 
 #input {
-    height: 400px;
-    width: 90%;
+    height: 300px;
+    width: 100%;
+}
+
+#parse {
+    width: 20%;
+    margin-left: 40%;
+    margin-right: 40%;
+    height: 30px;
 }
