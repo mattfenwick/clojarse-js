@@ -10,9 +10,11 @@ var NEW_TESTS = [
     'test/app/ast_to_jstree',
 ];
 
-require(NEW_TESTS, function() {
-    var mods = Array.prototype.slice.call(arguments);
-    mods.map(function(mod, ix) {
-        mod();
+require(["test/helper"], function(helper) {
+    require(NEW_TESTS, function() {
+        var mods = Array.prototype.slice.call(arguments);
+        mods.map(function(mod, ix) {
+            mod(helper);
+        });
     });
 });

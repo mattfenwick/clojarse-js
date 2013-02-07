@@ -1,6 +1,6 @@
 define(["app/tokens"], function (Tokens) {
 
-    return function() {
+    return function(helper) {
     
         module("tokens");
         var token = Tokens.Token;
@@ -19,12 +19,9 @@ define(["app/tokens"], function (Tokens) {
         });
         
         test("invalid token type", function() {
-            ok(0, "haven't figured out exception-raising tests yet");
-            /*var excepts = [
-                [function() {
-                    token('blargh?', 'hi');
-                }, 'ValueError', 'invalid token type causes exception']
-            ];*/
+            helper(function() {
+                token('blargh?', 'hi');
+            }, 'ValueError', 'invalid token type causes exception');
         });
 
     };

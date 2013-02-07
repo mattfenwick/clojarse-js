@@ -1,5 +1,4 @@
-
-var TestHelper = (function(ok, equal) {
+define(function() {
     
     function expectException(f, type, message, errortype) {// errortype is optional
         if(!type) {
@@ -24,9 +23,6 @@ var TestHelper = (function(ok, equal) {
       }
     }
     
+    return expectException;
     
-    return {
-        'expectException': expectException
-    };
-    
-})(ok, equal);
+});
