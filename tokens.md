@@ -13,25 +13,28 @@ whitespace, or punctuation characters follow them.  These tokens are:
  - boolean
 
 
-    OPEN-PAREN    :=  '('
-    CLOSE-PAREN   :=  ')'
-    OPEN-SQUARE   :=  '['
-    CLOSE-SQUARE  :=  ']'
-    OPEN-CURLY    :=  '{'
-    CLOSE-CURLY   :=  '}'
-    OPEN-FN       :=  #(
-    OPEN-SET      :=  #{
+    OPEN-PAREN        :=  (
+    CLOSE-PAREN       :=  )
+    OPEN-SQUARE       :=  [
+    CLOSE-SQUARE      :=  ]
+    OPEN-CURLY        :=  {
+    CLOSE-CURLY       :=  }
+    OPEN-FN           :=  #(
+    OPEN-SET          :=  #{
 
-    AT-SIGN       :=  '@'
-    OPEN-VAR      :=  #'
+    AT-SIGN           :=  @
+    OPEN-VAR          :=  #'
+    META              :=  ^  |  #^
+    QUOTE             :=  '
+    SYNTAX-QUOTE      :=  `
+    UNQUOTE-SPLICING  :=  ~@
+    UNQUOTE           :=  ~  
     
-    Open-Regex    :=  #"
+    Open-Regex        :=  #"
 
     Escape      :=  '\\'  ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\')
 
     StringBody  :=  ( Escape  |  (not  ( '\\'  |  DQ )) )(*)
-
-    Sq          :=  '\''
 
     Dq          :=  '"'
 
@@ -47,7 +50,7 @@ whitespace, or punctuation characters follow them.  These tokens are:
 
     Ratio       :=  Integer  '/'  Integer
 
-    NUMBER      :=  ( '-'  |  '+' )(?)  ( Float  |  SciNum  |  Integer  |  Ratio  | )
+    NUMBER      :=  ( '-'  |  '+' )(?)  ( Float  |  SciNum  |  Integer  |  Ratio )
 
     CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  /./ )    
             
