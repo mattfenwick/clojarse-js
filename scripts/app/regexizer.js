@@ -32,6 +32,11 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         ['open-var'     ,  /^(#')/,                   tok('open-var')     ],
         ['open-fn'      ,  /^(#\()/,                  tok('open-fn')      ],
         ['open-set'     ,  /^(#\{)/,                  tok('open-set')     ],
+        ['meta'         ,    /^(\^|\#\^)/,            tok('meta')         ],
+        ['quote'        ,    /^(\')/,                 tok('quote')        ],
+        ['syntax-quote' ,    /^(\`)/,                 tok('syntax-quote') ],
+        ['unquote-splicing', /^(~@)/,                 tok('unquote-splicing')],
+        ['unquote'      ,    /^(~)/,                  tok('unquote')      ],
         ['string'       ,  /^"((?:[^\\\"]|\\[btnfr\"\'\\])*)"/,
                                                       tok('string')       ],
         // 'regex' regex same but starts with #
@@ -45,10 +50,10 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         ['char-short'   ,  /^\\(.|\n|\r|\f)/,         tok('char')         ],
         ['nil'          ,  /^(nil)/,                  tok('nil')          ], // TODO does this work?
         ['boolean'      ,  /^(true|false)/,           tok('boolean')      ],
-        ['keyword'      ,  /^:([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%0-9\/]*)/,
+        ['keyword'      ,  /^:([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&0-9\/]*)/,
                                                       tok('keyword')      ],
         // same as keyword but for the leading :
-        ['symbol'       ,  /^([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%0-9\/]*)/, 
+        ['symbol'       ,  /^([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&0-9\/]*)/, 
                                                       tok('symbol')       ],
         ['comment'      ,  /^(?:;|#!)(.*)/,           tok('comment')      ],
         ['space'        ,  /^((?:\s|,)+)/,            tok('space')        ]

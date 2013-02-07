@@ -61,12 +61,32 @@ define(["libs/maybeerror", "app/tokens", "app/regexizer"], function (ME, Tokens,
                 ['at-sign',      '@',     2, 27],
                 ['open-var',     "#'",    2, 28],
                 ['space',        ' ',     2, 30],
-                ['number',       '3.2',   2, 31]];
+                ['number',       '3.2',   2, 31],
+                ['space',        ' \n ',  2, 34],
+                ['unquote-splicing', '~@', 3, 2],
+                ['unquote',      '~',     3, 4],
+                ['syntax-quote', '`',     3, 5],
+                ['quote',        "'",     3, 6],
+                ['meta',         '^',     3, 7],
+                ['meta',         '#^',    3, 8]];
             var tokens = ts.map(function(x) {
                 return T(x[0], x[1], {line: x[2], column: x[3]});
             });
 
-            deepEqual(mPure(tokens), scanner('123[nil{true(abc]false};oo\n#{"blar"#"nuff"  :non\\q)#(@#\' 3.2'), 'all tokens');
+            deepEqual(
+                mPure(tokens), 
+                scanner('123[nil{true(abc]false};oo\n#{"blar"#"nuff"  :non\\q)#(@#\' 3.2 \n ~@~`\'^#^'), 
+                'all tokens');
+        });
+        
+        test("symbols", function() {
+            var syms = ['.', '%', '&', 'nil? '];
+            syms.map(function(x) {
+                propEqual(
+                    mPure([T('symbol', x, {line: 1, column: 1}), T('space', ' ', {line: 1, column: 2})]),
+                    scanner(x + ' '),
+                    'symbol ' + x);
+            });
         });
         
         test("following chars", function() {
@@ -115,7 +135,7 @@ define(["libs/maybeerror", "app/tokens", "app/regexizer"], function (ME, Tokens,
                       scanner('"abc\\q" 123'),
                       "invalid char escape");
                         
-            // not sure if I can even hit this error -- what are some invalid chars in clojure ?? :            
+            // not sure if I can even hit this error -- what are some invalid chars in clojure ?? :  how about #abc or something?          
     //            deepEqual(err({error: {}, tokens: []}), scanner(), 'no matching token found');
         });
     };

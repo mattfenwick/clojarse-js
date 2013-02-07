@@ -6,8 +6,8 @@ define(["app/tokens"], function (Tokens) {
         var token = Tokens.Token;
         
         test("number of tokentypes", function() {
-            deepEqual(23, Tokens.priorities.length, 'priorities');
-            deepEqual(23, Object.keys(Tokens.tokentypes).length, 'tokentypes');
+            deepEqual(26, Tokens.priorities.length, 'priorities');
+            deepEqual(26, Object.keys(Tokens.tokentypes).length, 'tokentypes');
         });
         
         test("token constructors", function() {
