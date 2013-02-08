@@ -6,28 +6,24 @@ define(["app/ast"], function (AST) {
         }
         return {
             'data': type,
-            'children': subs.map(convert)
+            'children': subs.map(convert),
+            'state': 'open'
         };
     }
 
     function convertTable(pairs) {
-        var kids = pairs.map(function(p) {
-            return {
-                'data': 'entry',
-                children: p.map(convert),
-                'state': 'open'
-            };
-        });
         return {
             'data': 'table',
-            'children': kids
+            'children': pairs.map(manySubs.bind(null, 'entry')),
+            'state': 'open'
         };
     }
     
     function oneSub(type, sub) {
         return {
             'data': type,
-            'children': [convert(sub)]
+            'children': [convert(sub)],
+            'state': 'open'
         };
     }
     
@@ -56,9 +52,7 @@ define(["app/ast"], function (AST) {
     function convert(astNode) {
         var f = actions[astNode.asttype];
         if ( f ) {
-            var val = f(astNode.value);
-            val.state = 'open';
-            return val;
+            return f(astNode.value);
         }
         throw new Error('unrecognized astnode type: ' + astNode.asttype);
     }

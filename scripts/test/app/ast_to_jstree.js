@@ -6,8 +6,9 @@ define(["app/ast", "app/ast_to_jstree"], function (AST, a2jst) {
         var convert = a2jst.convert;
         
         function node(data, children) {
-            var out = {data: data, state: 'open'};
+            var out = {data: data};
             if ( children ) {
+                out.state = 'open';
                 out.children = children;
             }
             return out;
