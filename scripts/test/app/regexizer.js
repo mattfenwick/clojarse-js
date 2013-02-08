@@ -81,7 +81,7 @@ define(["libs/maybeerror", "app/tokens", "app/regexizer"], function (ME, Tokens,
         });
         
         test("symbols", function() {
-            var syms = ['.', '%', '&', 'nil?'];
+            var syms = ['.', '%', '&', 'nil?', 'and#'];
             syms.map(function(x) {
                 propEqual(
                     mPure([T('symbol', x, {line: 1, column: 1}), T('space', ' ', {line: 1, column: x.length + 1})]),

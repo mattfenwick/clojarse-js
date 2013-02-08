@@ -58,10 +58,9 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         // TODO scinum
         ['char-long'    ,  /^\\(newline|space|tab)/,  fChar               ],
         ['char-short'   ,  /^\\(.|\n|\r|\f)/,         tok('char')         ],
-        ['keyword'      ,  /^:([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&0-9\/]*)/,
+        ['keyword'      ,  /^:([^\s\%\"\;\@\^\`\~\(\)\[\]\{\}\\]*)/,
                                                       tok('keyword')      ],
-        // same as keyword but for the leading :
-        ['symbol'       ,  /^([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&0-9\/]*)/, 
+        ['symbol'       ,  /^([^\s\d\:\#\'\"\;\@\^\`\~\(\)\[\]\{\}\\][^\s\%\"\;\@\^\`\~\(\)\[\]\{\}\\]*)/, 
                                                       fSymbol             ],
         ['comment'      ,  /^(?:;|#!)(.*)/,           tok('comment')      ],
         ['space'        ,  /^((?:\s|,)+)/,            tok('space')        ]

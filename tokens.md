@@ -58,13 +58,13 @@ whitespace, or punctuation characters follow them.  These tokens are:
         
     BOOLEAN     :=  'true'  |  'false'
 
-    SymbolHead  :=  /[a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&]/
+    SymbolHead  :=  /[^\s\d\:\#\'\"\;\@\^\`\~\(\)\[\]\{\}\\]/
 
-    SymbolRest  :=  SymbolHead  |  Digit  |  '.'  |  '/'
+    SymbolRest  :=  /[^\s\%\"\;\@\^\`\~\(\)\[\]\{\}\\]/
 
     SYMBOL      :=  SymbolHead  SymbolRest(*)
 
-    KEYWORD     :=  ':'  SYMBOL
+    KEYWORD     :=  ':'  SymbolRest(*)
 
     Newline     :=  '\n'  |  '\r'  |  '\f'
 
