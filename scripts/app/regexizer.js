@@ -13,11 +13,21 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         'tab'    :  '\t'
     };
     
-    function fChar(str) {
+    function fChar(str, meta) {
         if(ESCAPES[str]) {
-            return tok('char')(ESCAPES[str]);
+            return tok('char')(ESCAPES[str], meta);
         }
         throw new Error('invalid char escape: ' + str);
+    }
+    
+    function fSymbol(str, meta) {
+        var ttype = 'symbol';
+        if(str === 'nil') {
+            ttype = 'nil';
+        } else if(str === 'false' || str === 'true') {
+            ttype = 'boolean';
+        }
+        return T(ttype, str, meta);
     }
     
     // these don't correspond exactly to token types
@@ -48,13 +58,11 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         // TODO scinum
         ['char-long'    ,  /^\\(newline|space|tab)/,  fChar               ],
         ['char-short'   ,  /^\\(.|\n|\r|\f)/,         tok('char')         ],
-        ['nil'          ,  /^(nil)/,                  tok('nil')          ], // TODO does this work?
-        ['boolean'      ,  /^(true|false)/,           tok('boolean')      ],
         ['keyword'      ,  /^:([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&0-9\/]*)/,
                                                       tok('keyword')      ],
         // same as keyword but for the leading :
         ['symbol'       ,  /^([a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&][a-zA-Z\*\+\!\-\_\?\>\<\=\$\.\%\&0-9\/]*)/, 
-                                                      tok('symbol')       ],
+                                                      fSymbol             ],
         ['comment'      ,  /^(?:;|#!)(.*)/,           tok('comment')      ],
         ['space'        ,  /^((?:\s|,)+)/,            tok('space')        ]
     ];

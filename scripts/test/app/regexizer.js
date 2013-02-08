@@ -68,22 +68,23 @@ define(["libs/maybeerror", "app/tokens", "app/regexizer"], function (ME, Tokens,
                 ['syntax-quote', '`',     3, 5],
                 ['quote',        "'",     3, 6],
                 ['meta',         '^',     3, 7],
-                ['meta',         '#^',    3, 8]];
+                ['meta',         '#^',    3, 8],
+                ['char',         ' ',     3, 10]];
             var tokens = ts.map(function(x) {
                 return T(x[0], x[1], {line: x[2], column: x[3]});
             });
 
             deepEqual(
                 mPure(tokens), 
-                scanner('123[nil{true(abc]false};oo\n#{"blar"#"nuff"  :non\\q)#(@#\' 3.2 \n ~@~`\'^#^'), 
+                scanner('123[nil{true(abc]false};oo\n#{"blar"#"nuff"  :non\\q)#(@#\' 3.2 \n ~@~`\'^#^\\space'), 
                 'all tokens');
         });
         
         test("symbols", function() {
-            var syms = ['.', '%', '&', 'nil? '];
+            var syms = ['.', '%', '&', 'nil?'];
             syms.map(function(x) {
                 propEqual(
-                    mPure([T('symbol', x, {line: 1, column: 1}), T('space', ' ', {line: 1, column: 2})]),
+                    mPure([T('symbol', x, {line: 1, column: 1}), T('space', ' ', {line: 1, column: x.length + 1})]),
                     scanner(x + ' '),
                     'symbol ' + x);
             });
@@ -102,14 +103,6 @@ define(["libs/maybeerror", "app/tokens", "app/regexizer"], function (ME, Tokens,
                            tokens: []}),
                       scanner("\\newline#{"),
                       'char -- long');
-            deepEqual(err({error: {message: 'invalid following characters', line: 1, column: 4, rest: 'abc'},
-                           tokens: []}),
-                      scanner("nilabc"),
-                      'nil');
-            deepEqual(err({error: {message: 'invalid following characters', line: 1, column: 6, rest: 'abc'},
-                           tokens: []}),
-                      scanner("falseabc"),
-                      'boolean');
         });
         
         test("error messages", function() {
