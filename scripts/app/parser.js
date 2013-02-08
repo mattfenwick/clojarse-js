@@ -66,19 +66,29 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
             tokentype('close-curly'),
             'table');
     
+    function firstMeta(f, p1, p2) {
+        return PC.app(function(a, b) {return f(b, a.meta);}, p1, p2);
+    }
+    
     var myFunction = delimited(
             tokentype('open-fn'),
             myForm.many0().fmap(AST.function),
             tokentype('close-paren'),
             'function'),
-        myQuote = null, // TODO ??
+        myQuote = firstMeta(AST.quote, tokentype('quote'), myForm),
         myRegex = tokentype('regex').fmap(metaF(AST.regex)),
-        myDeref = PC.app(function(a, f) {return AST.deref(f, a.meta);}, tokentype('at-sign'), myForm);
+        myDeref = firstMeta(AST.deref, tokentype('at-sign'), myForm),
+        myUnquote = firstMeta(AST.unquote, tokentype('unquote'), myForm),
+        myUnquoteSplicing = firstMeta(AST.unquotesplicing, tokentype('unquote-splicing'), myForm),
+        mySyntaxQuote = firstMeta(AST.syntaxquote, tokentype('syntax-quote'), myForm),
+        myMeta = firstMeta(AST.metadata, tokentype('meta'), PC.any([mySymbol, myString, myKeyword, myTable])); // fails without error -- bad !!!
         
     myForm.parse = PC.any([myString, myNumber, myChar, myNil,
-        myBoolean, mySymbol, myKeyword, 
+        myBoolean, mySymbol, myKeyword, myRegex,
         myList, myVector, mySet, myTable,
-        myFunction, myRegex, myDeref]).parse;
+        myFunction, myDeref, myQuote,
+        myUnquote, myUnquoteSplicing,
+        mySyntaxQuote, myMeta]).parse;
         
     var myForms = myForm.many0();
         
@@ -94,16 +104,17 @@ define(["libs/maybeerror", "libs/parsercombs", "app/ast", "app/tokens"], functio
         'boolean' :  myBoolean,
         'symbol'  :  mySymbol,
         'keyword' :  myKeyword,
+        'regex'   :  myRegex,
         
         'list'    :  myList,
         'vector'  :  myVector,
         'set'     :  mySet,
         'table'   :  myTable,
-        
         'function':  myFunction,
+        
         'quote'   :  myQuote,
-        'regex'   :  myRegex,
-        'deref'   :  myDeref
+        'deref'   :  myDeref,
+        'unquote' :  myUnquote
     };
 
 });

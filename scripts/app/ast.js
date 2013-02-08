@@ -56,6 +56,13 @@ define(function () {
         return astNode('keyword', str, meta);
     }
     
+    function myRegex(str, meta) {
+        if(typeof str !== 'string') {
+            throw new Error('type error');
+        }
+        return astNode('regex', str, meta);
+    }
+
     function myList(elems, meta) {
         if(elems.length === undefined || typeof elems === 'string') {
             throw new Error('type error');
@@ -99,17 +106,36 @@ define(function () {
     function myQuote(form, meta) {
         return astNode('quote', form, meta);
     }
-    
-    function myRegex(str, meta) {
-        if(typeof str !== 'string') {
-            throw new Error('type error');
-        }
-        return astNode('regex', str, meta);
-    }
-    
+        
     // just for kicks:  var myDeref = astNode.bind(null, 'deref');
     function myDeref(form, meta) {
         return astNode('deref', form, meta);
+    }
+    
+    function mySyntaxQuote(form, meta) {
+        return astNode('syntaxquote', form, meta);
+    }
+    
+    function myUnquoteSplicing(form, meta) {
+        return astNode('unquotesplicing', form, meta);
+    }
+    
+    function myUnquote(form, meta) {
+        return astNode('unquote', form, meta);
+    }
+    
+    var metatypes = {
+        'string' : 1,
+        'symbol' : 1,
+        'table'  : 1,
+        'keyword': 1
+    };
+    
+    function myMetadata(form, meta) {
+        if(!(form.asttype in metatypes)) {
+            throw new Error('invalid metadata type: ' + form.asttype);
+        }
+        return astNode('metadata', form, meta);
     }
 
 
@@ -122,16 +148,20 @@ define(function () {
         'boolean' :  myBoolean,
         'symbol'  :  mySymbol,
         'keyword' :  myKeyword,
+        'regex'   :  myRegex,
         
         'list'    :  myList,
         'vector'  :  myVector,
         'set'     :  mySet,
         'table'   :  myTable,
-        
         'function':  myFunction,
+        
         'quote'   :  myQuote,
-        'regex'   :  myRegex,
-        'deref'   :  myDeref
+        'deref'   :  myDeref,
+        'syntaxquote'  :  mySyntaxQuote,
+        'unquotesplicing'  :  myUnquoteSplicing,
+        'unquote'      :  myUnquote,
+        'metadata'     :  myMetadata
     };
 
 });

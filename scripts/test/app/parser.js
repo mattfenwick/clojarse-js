@@ -21,6 +21,11 @@ define(["app/tokens", "app/ast", "libs/maybeerror", "libs/parsercombs", "app/par
             tnil = T('nil', 'nil', 14),
             tfal = T('boolean', 'false', 15),
             tkey = T('keyword', 'abcde', 16),
+            tqt  = T('quote', "'", 17),
+            tuqt = T('unquote', '~', 18),
+            tuqs = T('unquote-splicing', '~@', 19),
+            tsq  = T('syntax-quote', '`', 20),
+            tmet = T('meta', '#^', 21),
             anum = AST.number(32, 1),
             astr = AST.string('abc', 2),
             asym = AST.symbol('+', 3),
@@ -32,7 +37,12 @@ define(["app/tokens", "app/ast", "libs/maybeerror", "libs/parsercombs", "app/par
             adrf = AST.deref(anum, 13)
             anil = AST.nil(14),
             afal = AST.boolean(false, 15),
-            akey = AST.keyword('abcde', 16);
+            akey = AST.keyword('abcde', 16),
+            aqt  = AST.quote(anum, 17),
+            auqt = AST.unquote(asym, 18),
+            auqs = AST.unquotesplicing(astr, 19),
+            asq  = AST.syntaxquote(anum, 20),
+            amet = AST.metadata(asym, 21);
             
         function good(rest, result) {
             return ME.pure({rest: rest, result: result});
@@ -51,6 +61,14 @@ define(["app/tokens", "app/ast", "libs/maybeerror", "libs/parsercombs", "app/par
             deepEqual(good([], anil), form.parse([tnil]), 'nil');
             deepEqual(good([], afal), form.parse([tfal]), 'boolean');
             deepEqual(good([], akey), form.parse([tkey]), 'keyword');
+        });
+        
+        test('quote, unquote, splicing, unquotesplicing, meta', function() {
+            deepEqual(good([tstr], aqt), form.parse([tqt, tnum, tstr]), 'quote');            
+            deepEqual(good([tnum], auqt), form.parse([tuqt, tsym, tnum]), 'unquote');
+            deepEqual(good([tsym], auqs), form.parse([tuqs, tstr, tsym]), 'unquotesplicing');
+            deepEqual(good([tsym], asq), form.parse([tsq, tnum, tsym]), 'syntaxquote');
+            propEqual(good([tnum], amet), form.parse([tmet, tsym, tnum]), 'metadata');
         });
         
         test('unmatched open delimiter', function() {

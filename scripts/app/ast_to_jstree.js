@@ -41,6 +41,48 @@ define(["app/ast"], function (AST) {
             'children': v.map(convert)
         };
     }
+    
+    function convertDeref(v) {
+        return {
+            'data': 'deref',
+            'children': [convert(v)]
+        };
+    }
+    
+    function convertQuote(v) {
+        return {
+            'data': 'quote',
+            'children': [convert(v)]
+        };
+    }
+    
+    function convertUnquote(v) {
+        return {
+            'data': 'unquote',
+            'children': [convert(v)]
+        };
+    }
+    
+    function convertUnquoteSplicing(v) {
+        return {
+            'data': 'unquote splicing',
+            'children': [convert(v)]
+        };
+    }
+    
+    function convertSyntaxQuote(v) {
+        return {
+            'data': 'syntax quote',
+            'children': [convert(v)]
+        };
+    }
+    
+    function convertMetadata(v) {
+        return {
+            'data': 'metadata',
+            'children': [convert(v)]
+        };
+    }
 
     var actions = {
         'nil'    :  function() {return {'data': 'nil'};},
@@ -55,7 +97,13 @@ define(["app/ast"], function (AST) {
         'vector' :  convertVector,
         'table'  :  convertTable,
         'set'    :  convertSet,
-        'function': convertFunction
+        'function': convertFunction,
+        'deref'  :  convertDeref,
+        'quote'  :  convertQuote,
+        'unquote' : convertUnquote,
+        'unquotesplicing' : convertUnquoteSplicing,
+        'syntaxquote' : convertSyntaxQuote,
+        'metadata'    : convertMetadata
     };
 
     function convert(astNode) {
