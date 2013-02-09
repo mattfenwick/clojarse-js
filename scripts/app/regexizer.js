@@ -47,10 +47,11 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         ['syntax-quote' ,    /^(\`)/,                 tok('syntax-quote') ],
         ['unquote-splicing', /^(~@)/,                 tok('unquote-splicing')],
         ['unquote'      ,    /^(~)/,                  tok('unquote')      ],
+        // " and \ are restricted
         ['string'       ,  /^"((?:[^\\\"]|\\[btnfr\"\'\\])*)"/,
                                                       tok('string')       ],
-        // 'regex' regex same but starts with #
-        ['regex'        ,  /^#"((?:[^\\\"]|\\[btnfr\"\'\\])*)"/,
+        // #", \" or anything but a ", "
+        ['regex'        ,  /^#"((?:\\"|[^"])*)"/,
                                                       tok('regex')        ],
         ['float'        ,  /^([\+\-]?\d+\.\d*)/,      tok('number')       ],
         ['ratio'        ,  /^([\+\-]?\d+\/\d+)/,      tok('number')       ],
@@ -75,8 +76,6 @@ define(["libs/maybeerror", "app/tokens"], function (MaybeError, Tokens) {
         'ratio'       :  AFTER2,
         'char-long'   :  AFTER1,
         'char-short'  :  AFTER1,
-        'nil'         :  AFTER1,
-        'boolean'     :  AFTER1,
         'keyword'     :  AFTER1,
         'symbol'      :  AFTER1
     };
