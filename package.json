@@ -1,0 +1,37 @@
+{
+  "name": "clolint-js",
+  "version": "0.0.1",
+  "description": "parsing and linting of Clojure code",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "unparse-js": "0.1.4"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-jshint": "~0.9.2",
+    "mocha": "1.18.2"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mattfenwick/clolint-js.git"
+  },
+  "keywords": [
+    "Clojure",
+    "lint",
+    "parse",
+    "parsing"
+  ],
+  "author": "Matt Fenwick",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mattfenwick/clolint-js/issues"
+  },
+  "homepage": "https://github.com/mattfenwick/clolint-js"
+}
