@@ -28,34 +28,30 @@ whitespace, or punctuation characters follow them.  These tokens are:
     QUOTE             :=  '
     SYNTAX-QUOTE      :=  `
     UNQUOTE-SPLICING  :=  ~@
-    UNQUOTE           :=  ~  
-    
-    Open-Regex        :=  #"
+    UNQUOTE           :=  ~
 
-    Escape      :=  '\\'  ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\')
+    StringChar  :=  Escape  |  /[^\\"]/
+      where
+        Escape  :=  '\\'  /[btnfr"'\\]/
 
-    StringBody  :=  ( Escape  |  (not  ( '\\'  |  DQ )) )(*)
+    STRING      :=  '"'  StringChar(*)  '"'
 
-    Dq          :=  '"'
+    REGEX       :=  '#"'  StringChar(*)  '"'
 
-    STRING      :=  Dq  StringBody  Dq
+    Float       :=  Integer  '.'  Integer(?)
 
-    REGEX       :=  Open-Regex  StringBody  Dq
+    SciNum      :=  Float  /[eE]/  /[-+]/(?)  Integer  
 
-    Float       :=  Integer  '.'  Digit(*)
-
-    SciNum      :=  Float  /e/i  /[-+]/(?)  Integer  
-
-    Integer     :=  Digit(+)
+    Integer     :=  /\d+/
 
     Ratio       :=  Integer  '/'  Integer
 
-    NUMBER      :=  ( '-'  |  '+' )(?)  ( Float  |  SciNum  |  Integer  |  Ratio )
+    NUMBER      :=  /[-+]?/  ( Float  |  SciNum  |  Integer  |  Ratio )
 
     CHAR        :=  '\\'  ( 'newline'  |  'space'  |  'tab'  |  /./ )    
-            
+
     NIL         :=  'nil'
-        
+
     BOOLEAN     :=  'true'  |  'false'
 
     SymbolHead  :=  /[^\s\d\:\#\'\"\;\@\^\`\~\(\)\[\]\{\}\\]/
@@ -66,8 +62,6 @@ whitespace, or punctuation characters follow them.  These tokens are:
 
     KEYWORD     :=  ':'  SymbolRest(*)
 
-    Newline     :=  '\n'  |  '\r'  |  '\f'
+    COMMENT     :=  /(;|#!)[^\n\r\f]*/
 
-    COMMENT     :=  ( ';'  |  '#!' )  (not Newline)(*)
-
-    SPACE       :=  ( ' '  |  '\t'  |  ','  |  Newline )(+)
+    SPACE       :=  /[ \t,\n\r\f]+/

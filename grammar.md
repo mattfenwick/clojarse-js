@@ -1,7 +1,7 @@
 
     Clojure   :=  Form(+)
         
-    Form	  :=  Atom  |  Compound  |  MacroForm
+    Form      :=  Atom  |  Compound  |  MacroForm
     
 
     Atom      :=  SYMBOL  |  STRING  |  NUMBER   |  
