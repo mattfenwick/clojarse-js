@@ -65,3 +65,4 @@ whitespace, or punctuation characters follow them.  These tokens are:
     COMMENT     :=  /(;|#!)[^\n\r\f]*/
 
     SPACE       :=  /[ \t,\n\r\f]+/
+

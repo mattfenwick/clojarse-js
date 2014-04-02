@@ -40,3 +40,10 @@ so, if we open a token with a character that's not covered above,
  - note:   #'%   are NOT terminating macro characters
 
  - further note:  nevertheless, % seems to terminate symbols
+   - example please?  becuase these work:
+     - `(def abc% 3)`
+     - `(print abc%)`
+   - example in repl:
+     - `user=> abc%`
+     - seems to only happen when it's the last form on a line
+
