@@ -28,6 +28,16 @@
    - same as string, but for open?
 
  - number
+   - integer examples
+     - `0`, `+0`, `-0`
+     - base 10: `34N`
+     - base 16: `0xabcN`
+     - base 8: `+007`
+     - custom radix: `36rabcz` (no trailing N)
+     - custom radix error: `35rz` (b/c z out of range for base 35)
+     - custom radix error: `37rz` (b/c 36 is maximum radix)
+     - error: `08`
+     - error: `4a`
    - bigint
      - `42N`
    - bigdecimal
@@ -57,6 +67,7 @@
      - invalid: `3/ 4`
      - ?invalid?: `3 /4`
      - invalid: `3/-4`
+     - not an error: `09/8` (surprising because `09` **is** an error)
 
  - char
    - escape
@@ -104,6 +115,9 @@
 ## Special notes ##
 
  - `/` -- what is it?  (it's a valid form)
+ 
+ - `clojure.core//` -- trailing `//` has something to do with namespaces.
+   not sure what it does
 
  - `\n` is just the 'n' character (ASCII 110), not a newline escape.
    but, "\n" is the one-character string for a newline escape.
