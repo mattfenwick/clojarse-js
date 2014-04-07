@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "unparse-js": "0.1.4"
+    "unparse-js": "0.1.6"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
