@@ -1,3 +1,8 @@
+# Tokens #
+
+see lib/parser.js
+
+# Token sub-parsers #
 
 ## Punctuation ##
 
@@ -20,109 +25,154 @@
 
 ## String ##
 
-   - simple escape
-     - `/\\[btnfr\\"]/`
+Syntax
 
-   - octal escape
-     - good: \0, \10, \3\3 \232
-     - bad: \9, \400, \3z 
-     - octal sequence is terminated by some macro characters
+   - escape
+       - opening `\`
+         - error: next char matches `[^btnfr\\"0-7u]`
+   
+       - simple
+         - `/[btnfr\\"]/`
 
-   - unicode escape
+       - octal
+         - `/[0-7]{1,3}/`
+         - stops when: 3 octal characters parsed, or whitespace hit,
+           or macro character hit
+         - error: digit is 8 or 9
+         - error: hasn't finished, but encounters character which is not
+           whitespace, octal, or macro
+
+       - unicode
+         - `/u[0-9a-zA-Z]{4}/`
+         - error: less than four hex characters found
 
    - plain character (not escaped)
-     - unprintable chars (actual newline, etc.)
+     - `/[^\\"]`
+     - ?? unprintable chars (actual newline, etc.) ??
 
-   - examples
-     - `(= "\n" "\
-")`
+Notes
+
+   - macro and whitespace characters have special meaning inside strings:
+     they terminate octal and unicode escape sequences
+   - octal and unicode escapes use Java's `Character.digit` and
+     `Character.isDigit`, so they seem to work other forms of digits,
+     such as u+ff13
+
+Examples
+
+   - real newline
+   
+        (= "\n" "\
+        ")
+   
+   - octal escapes
+   
+     - good: \0, \10, \3\3 \232
+     - bad: \9, \400, \3z 
+
 
 ## Regex ##
+
+Syntax
  
-   - open: `#"`
-   - escape
-     - real: `\` followed by `\` or `"`
-     - fake: `\` followed by anything else. so-called b/c both characters get included in output
-   - close: `"`
+   - real escape: `/\\[\\"]/`
+   - fake escape: `/\\[^\\"]/`
+     so-called because both characters get included in output
+
+Notes
+
+Examples
+
 
 ## Number ##
 
-   - integer
-     - syntax
-       - sign: `/[+-]?/`
-       - body: base8, base16, base(2-36), base10
-       - suffix: `/N?/`
-       
-     - examples
-        - `0`, `+0`, `-0`
-        - base 10: `34N`
-        - base 16: `0xabcN`
-        - base 8: `+007`
-        - custom radix: `36rabcz` (no trailing N)
-        - custom radix error: `35rz` (b/c z out of range for base 35)
-        - custom radix error: `37rz` (b/c 36 is maximum radix)
-        - error: `08`
-        - error: `4a`
-        - not an integer: `- 0`
-        - not an integer: `+ 0`
-        - overflow seems impossible, b/c Clojure uses bigints where necessary
-   
-     - base16
-       - `/0[xX]hex+/
-       - where `hex` is `/[0-9a-zA-Z]/`
-       
-     - base8 (not sure about this)
-       - `/0[0-7]+/`
-       
-     - base(2-36)
-       - `/[1-9][0-9]?[rR][0-9a-zA-Z]+/
-       - max radix of 36
-       - digits after `/[rR]/` must correspond to range of radix
-     
-     - base10
-       - `/[1-9][0-9]*/`
-
-     - bigint suffix
-       - `42N`
-       - apparently, can't apply to base(2-36)
-
-   - float
-    - syntax
-        - sign: `/[-+]?/`
-        - int: `/[0-9]+/`
-        - decimal (optional)
-            - dot: `.`
-            - int: `/[0-9]*/`
-        - exponent (optional)
-            - e: `/[eE]/`
-            - sign: `/[+-]?/`
-            - power: `/[0-9]+/`
-        - suffix
-            - `/M?/`
-    - examples
-        - `0.`
-        - `0.0000`
-        - overflow: `(. Double parseDouble (apply str (range 0 1000)))`
-        - underflow: `(. Double parseDouble (apply str (cons "-" (range 0 1000))))`
-        - `3e0`
-        - `3e-0`
-        - `5.e-4`
-        - parses, but overflows: `4.2e+892`
-        - parses, but underflows: `4.2e-892`
+Syntax
 
    - ratio
-     - sign: `/[-+]?/`
-     - numerator: `/[0-9]+/`
-     - slash: `/`
-     - denominator: `/[0-9]+/`
-     - examples
-        - valid: `3/4`
-        - valid: `-3/4`
-        - parses, but blows up in evaluation: `4/0`
-        - invalid: `3/ 4`
-        - ?invalid?: `3 /4`
-        - invalid: `3/-4`
-        - not an error: `09/8` (surprising because `09` **is** an error)
+
+       - sign: `/[-+]?/`
+       - numerator: `/[0-9]+/`
+       - slash: `/`
+       - denominator: `/[0-9]+/`
+
+   - float
+
+       - sign: `/[-+]?/`
+       - int: `/[0-9]+/`
+       - decimal (optional)
+           - dot: `.`
+           - int: `/[0-9]*/`
+       - exponent (optional)
+           - e: `/[eE]/`
+           - sign: `/[+-]?/`
+           - power: `/[0-9]+/`
+       - suffix
+           - `/M?/`
+
+   - integer
+
+       - sign: `/[+-]?/`
+       - body
+           - base16
+               - `/0[xX]hex+/
+               - where `hex` is `/[0-9a-zA-Z]/`
+
+           - base8 (not sure about this)
+               - `/0[0-7]+/`
+               - error: `08`
+
+           - base(2-36)
+               - `/[1-9][0-9]?[rR][0-9a-zA-Z]+/`
+               - max radix of 36
+               - digits after `/[rR]/` must correspond to range of radix
+               - error: `35rz` (b/c z out of range for base 35)
+               - error: `37rz` (b/c 36 is maximum radix)
+
+           - base10
+               - `/[1-9][0-9]*/`
+
+       - bigint suffix: `/N?/`
+
+Notes
+
+   - apparently, can't apply bigint suffix to base(2-36)
+   - integer overflow seems impossible, b/c Clojure uses bigints where necessary
+
+
+Examples
+
+  - integer
+  
+    - `0`, `+0`, `-0`
+    - base 10: `34N`
+    - base 16: `0xabcN`
+    - base 8: `+007`
+    - custom radix: `36rabcz` (no trailing N)
+    - not an integer: `- 0`
+    - not an integer: `+ 0`
+
+  - float
+
+    - `0.`
+    - `0.0000`
+    - overflow: `(. Double parseDouble (apply str (range 0 1000)))`
+    - underflow: `(. Double parseDouble (apply str (cons "-" (range 0 1000))))`
+    - `3e0`
+    - `3e-0`
+    - `5.e-4`
+    - parses, but overflows: `4.2e+892`
+    - parses, but underflows: `4.2e-892`
+   
+  - ratio
+
+    - valid: `3/4`
+    - valid: `-3/4`
+    - parses, but blows up in evaluation: `4/0`
+    - invalid: `3/ 4`
+    - ?invalid?: `3 /4`
+    - invalid: `3/-4`
+    - not an error: `09/8` (surprising because `09` **is** an error)
+
 
 ## Char ##
 
