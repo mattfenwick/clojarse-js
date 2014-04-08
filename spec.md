@@ -1,5 +1,5 @@
 
-## Tokens ##
+## Punctuation ##
 
  - `(`
  - `)`
@@ -17,17 +17,36 @@
  - syntax-quote: `\``
  - unquote-splicing: `~@`
  - unquote: `~`
- - string
-   - `(= "\n" "\
-")`
-   - escape
-     - `\n`
-   - plain char
-     - unprintable chars (actual newline, etc.)
- - regex
-   - same as string, but for open?
 
- - number
+## String ##
+
+   - simple escape
+     - `/\\[btnfr\\"]/`
+
+   - octal escape
+     - good: \0, \10, \3\3 \232
+     - bad: \9, \400, \3z 
+     - octal sequence is terminated by some macro characters
+
+   - unicode escape
+
+   - plain character (not escaped)
+     - unprintable chars (actual newline, etc.)
+
+   - examples
+     - `(= "\n" "\
+")`
+
+## Regex ##
+ 
+   - open: `#"`
+   - escape
+     - real: `\` followed by `\` or `"`
+     - fake: `\` followed by anything else. so-called b/c both characters get included in output
+   - close: `"`
+
+## Number ##
+
    - integer
      - syntax
        - sign: `/[+-]?/`
@@ -68,22 +87,34 @@
        - apparently, can't apply to base(2-36)
 
    - float
-     - bigdecimal
-       - `42M`
-       - error: `42P`
+    - syntax
+        - sign: `/[-+]?/`
+        - int: `/[0-9]+/`
+        - decimal (optional)
+            - dot: `.`
+            - int: `/[0-9]*/`
+        - exponent (optional)
+            - e: `/[eE]/`
+            - sign: `/[+-]?/`
+            - power: `/[0-9]+/`
+        - suffix
+            - `/M?/`
     - examples
-     - `0.`
-     - `0.0000`
-     - overflow: `(. Double parseDouble (apply str (range 0 1000)))`
-     - underflow: `(. Double parseDouble (apply str (cons "-" (range 0 1000))))`
-    - scinum
-     - `3e0`
-     - `3e-0`
-     - `5.e-4`
-     - parses, but overflows: `4.2e+892`
-     - parses, but underflows: `4.2e-892`
+        - `0.`
+        - `0.0000`
+        - overflow: `(. Double parseDouble (apply str (range 0 1000)))`
+        - underflow: `(. Double parseDouble (apply str (cons "-" (range 0 1000))))`
+        - `3e0`
+        - `3e-0`
+        - `5.e-4`
+        - parses, but overflows: `4.2e+892`
+        - parses, but underflows: `4.2e-892`
 
    - ratio
+     - sign: `/[-+]?/`
+     - numerator: `/[0-9]+/`
+     - slash: `/`
+     - denominator: `/[0-9]+/`
      - examples
         - valid: `3/4`
         - valid: `-3/4`
@@ -93,7 +124,8 @@
         - invalid: `3/-4`
         - not an error: `09/8` (surprising because `09` **is** an error)
 
- - char
+## Char ##
+
    - long escape
      - `\newline`
      - `\space`
@@ -121,7 +153,8 @@
        an actual newline
      - what about unprintable characters?
 
- - symbol
+## Symbol ##
+
    - keywords
      - auto vs ?not?-auto
        - multiple ways to get the same thing
@@ -241,10 +274,12 @@
         input:  '/ab
         Invalid token: /ab
 
- - comment
+## Comment ##
+
    - `/(;|#!)[^\n\r\f]*/`
 
- - whitespace
+## Whitespace ##
+
    - `/[ \t,\n\r\f]+/`
 
 ## Special notes ##
