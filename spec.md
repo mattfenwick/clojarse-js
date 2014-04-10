@@ -1,8 +1,61 @@
-# Tokens #
+# Other resources #
 
-see lib/parser.js
+ - [the CCW ANTLR grammar](https://github.com/laurentpetit/ccw) 
+ - [the Clojure implementation](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LispReader.java)
 
-# Token sub-parsers #
+
+# Structural parsing #
+
+Goal: correctly break input into tokens and hierarchical forms, but don't
+worry about verifying that tokens have the correctly internal structure.
+Just make sure the right amount of text is matched for each token.
+
+## Comment ##
+
+   - `/(;|#!)[^\n\r\f]*/`
+
+## Whitespace ##
+
+   - `/[ \t,\n\r\f]+/`
+
+## Macro ##
+
+   - `/[";@^`~()[]{}\\'%#]/`
+
+## Terminating macro
+   
+   - `/[";@^`~()[]{}\\]/`
+
+
+## Number ##
+
+   - sign:  `/[-+]/`
+   - digit: `/\d/`
+   - rest: `(not1  ( whitespace  |  macro ) )(*)`
+
+## Symbol ##
+
+   - first:  `(not1  ( whitespace  |  macro ) )  |  '%'`
+   - rest:  `(not1  ( whitespace  |  terminatingMacro ))(*)`
+
+## Character ##
+
+   - open: `\\`
+   - first: `.`
+   - rest: `(not1  ( whitespace  |  terminatingMacro ) )(*)`
+
+
+## String ##
+
+   - open: `"`
+   - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
+   - close: `"`
+
+## Regex ##
+
+   - open: `#"`
+   - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
+   - close: `"`
 
 ## Punctuation ##
 
@@ -22,6 +75,9 @@ see lib/parser.js
  - syntax-quote: `\``
  - unquote-splicing: `~@`
  - unquote: `~`
+
+
+# Token sub-parsers #
 
 ## String ##
 
@@ -324,19 +380,11 @@ Examples
         input:  '/ab
         Invalid token: /ab
 
-## Comment ##
-
-   - `/(;|#!)[^\n\r\f]*/`
-
-## Whitespace ##
-
-   - `/[ \t,\n\r\f]+/`
-
 ## Special notes ##
 
  - `\n`
-   - in a character: just the 'n' character (ASCII 110), not a newline escape.
-   - in a string: the one-character string for a newline escape.
+   - in a character: just the 'n' character (ASCII 110), not a newline escape
+   - in a string: the one-character string for a newline escape
    - use `\newline` for the newline character
 
 ## Hierarchical forms ##
