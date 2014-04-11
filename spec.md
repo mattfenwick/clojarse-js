@@ -10,54 +10,55 @@ Goal: correctly break input into tokens and hierarchical forms, but don't
 worry about verifying that tokens have the correctly internal structure.
 Just make sure the right amount of text is matched for each token.
 
-## Comment ##
+## Tokens ##
 
-   - `/(;|#!)[^\n\r\f]*/`
+Definitions:
 
-## Whitespace ##
+   - macro character: `/[";@^`~()[]{}\\'%#]/`
+   
+   - terminating macro character: `/[";@^`~()[]{}\\]/`
+
+### Comment ###
+
+   - open: `/(;|#!)/`
+   - rest: `/[^\n\r\f]*/`
+
+### Whitespace ###
 
    - `/[ \t,\n\r\f]+/`
 
-## Macro ##
 
-   - `/[";@^`~()[]{}\\'%#]/`
-
-## Terminating macro
-   
-   - `/[";@^`~()[]{}\\]/`
-
-
-## Number ##
+### Number ###
 
    - sign:  `/[-+]/`
    - digit: `/\d/`
    - rest: `(not1  ( whitespace  |  macro ) )(*)`
 
-## Symbol ##
+### Symbol ###
 
    - first:  `(not1  ( whitespace  |  macro ) )  |  '%'`
    - rest:  `(not1  ( whitespace  |  terminatingMacro ))(*)`
 
-## Character ##
+### Character ###
 
    - open: `\\`
    - first: `.`
    - rest: `(not1  ( whitespace  |  terminatingMacro ) )(*)`
 
 
-## String ##
+### String ###
 
    - open: `"`
    - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
    - close: `"`
 
-## Regex ##
+### Regex ###
 
    - open: `#"`
    - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
    - close: `"`
 
-## Punctuation ##
+### Punctuation ###
 
  - `(`
  - `)`
@@ -65,16 +66,118 @@ Just make sure the right amount of text is matched for each token.
  - `]`
  - `{`
  - `}`
- - open-fn: `#(`
- - open-set: `#{`
  - `@`
- - open-var: `#'`
- - meta: `^`
- - meta: `#^`
- - quote: `'`
- - syntax-quote: `\``
- - unquote-splicing: `~@`
- - unquote: `~`
+ - `^`
+ - `'`
+ - ``` ` ```
+ - `~@`
+ - `~`
+ - #-dispatches
+   - `#(`
+   - `#{`
+   - `#^`
+   - `#'`
+   - `#=`
+   - `#_`
+   - `#<` -- ??? unreadable reader ???
+   - error: `#` followed by anything else (except for `#!` and `#"`)!
+
+## Hierarchical forms ##
+
+Whitespace, comments and discard forms (`#_`) can appear in any amount
+between tokens.
+
+### Discard ###
+
+   - open: `#_`
+   - form: `Form`
+
+### List ###
+
+   - open: `(`
+   - body: `Form(*)`
+   - close: `)`
+
+### Vector ###
+
+   - open: `[`
+   - body: `Form(*)`
+   - close: `]`
+
+### Table ###
+
+   - open: `{`
+   - body: `Form(*)`
+   - close: `}`
+
+### Quote ###
+
+   - open: `'`
+   - form: `Form`
+
+### Deref ###
+
+   - open: `@`
+   - form: `Form`
+
+### Unquote ###
+
+   - open: `~`
+   - form: `Form`
+
+### Unquote splicing ###
+
+   - open: `~@`
+   - form: `Form`
+
+### Syntax quote ###
+
+   - open: ``` ` ```
+   - form: `Form`
+
+### Function ###
+
+   - open: `#(`
+   - body: `Form(*)`
+   - close: `)`
+
+### Set ###
+
+   - open: `#{`
+   - body: `Form(*)`
+   - close: `}`
+
+### Meta ###
+
+   - open: `'^'  |  '#^'`
+   - metadata: `Form`
+   - value: `Form`
+
+### Eval ###
+
+   - open: `#=`
+   - form: `Form`
+
+### Var ###
+
+   - open: `#'`
+   - value: `Form`
+
+### Unreadable ###
+
+   - open: `#<`
+   - rest: ??????????
+
+### Form ###
+
+     String  |  Number  |  Char  |  Symbol  |  Regex     |
+     List    |  Vector  |  Set   |  Table   |  Function  |
+     Deref   |  Quote   |  Unquote  |  UnquoteSplicing   |
+     SyntaxQuote  |  Meta  |  Eval  |  Var
+
+### Clojure ###
+
+    Form(*)
 
 
 # Token sub-parsers #
@@ -390,5 +493,4 @@ Examples
 ## Hierarchical forms ##
 
  - `^ {} {}` is valid meta-data, but `^ 3 {}` and `^ {} 3` are not
-   there may be a problem in the grammar currently
 
