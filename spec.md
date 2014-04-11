@@ -368,8 +368,8 @@ Examples
      - auto vs ?not?-auto
        - multiple ways to get the same thing
 
-        abc=> (set [::s :s ::abc/s :abc/s])
-        #{:abc/s :s}
+                abc=> (set [::s :s ::abc/s :abc/s])
+                #{:abc/s :s}
     
      - `::abc/def` apparently is only valid when there's an `abc` namespace
      -  `:abc/def` apparently is always valid
@@ -377,7 +377,7 @@ Examples
 
    - special errors
      - `::` anywhere but at the beginning
-     - if it matches `/([:]?)([^\d/].*/)?(/|[^\d/][^/]*)/`
+     - if it matches `/([:]?)([^\d/].*/)?(/|[^\d/][^/]*)/`, and:
        - `$2 =~ /:\/$/` -> error
        - `$3 =~ /:$/` -> error
 
