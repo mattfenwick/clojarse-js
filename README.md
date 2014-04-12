@@ -24,11 +24,11 @@ Definitions:
 ### Comment ###
 
    - open: `/(;|#!)/`
-   - rest: `/[^\n\r\f]*/`
+   - value: `/[^\n\r\f]*/`
 
 ### Whitespace ###
 
-   - `/[ \t,\n\r\f]+/`
+   - value: `/[ \t,\n\r\f]+/`
 
 Also, everything else that Java's `Character.isWhitespace` considers to be whitespace.
 
@@ -36,7 +36,7 @@ Also, everything else that Java's `Character.isWhitespace` considers to be white
 ### Number ###
 
    - sign:  `/[-+]?/`
-   - digit: `/\d/`
+   - first: `/\d/`
    - rest: `(not1  ( whitespace  |  macro ) )(*)`
 
 Examples
@@ -66,7 +66,7 @@ Because: outside of a `#()` function, `%...` is just a normal symbol.
 ### String ###
 
    - open: `"`
-   - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
+   - body: `/([^\\"]|\\.)*/` -- `.` includes newlines
    - close: `"`
 
 This is only approximately correct.  how could it go wrong?
@@ -74,7 +74,7 @@ This is only approximately correct.  how could it go wrong?
 ### Regex ###
 
    - open: `#"`
-   - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
+   - body: `/([^\\"]|\\.)*/` -- `.` includes newlines
    - close: `"`
 
 ### Punctuation ###
@@ -99,7 +99,7 @@ This is only approximately correct.  how could it go wrong?
    - `#=`
    - `#_`
    - `#<` -- ??? unreadable reader ???
-   - error: `#` followed by anything else (except for `#!` and `#"`)!
+   - error: `#` followed by anything else (except for `#!` and `#"`)
 
 ## Hierarchical forms ##
 
@@ -109,7 +109,7 @@ between tokens.
 ### Discard ###
 
    - open: `#_`
-   - form: `Form`
+   - value: `Form`
 
 ### List ###
 
@@ -132,27 +132,27 @@ between tokens.
 ### Quote ###
 
    - open: `'`
-   - form: `Form`
+   - value: `Form`
 
 ### Deref ###
 
    - open: `@`
-   - form: `Form`
+   - value: `Form`
 
 ### Unquote ###
 
    - open: `~`
-   - form: `Form`
+   - value: `Form`
 
 ### Unquote splicing ###
 
    - open: `~@`
-   - form: `Form`
+   - value: `Form`
 
 ### Syntax quote ###
 
    - open: ``` ` ```
-   - form: `Form`
+   - value: `Form`
 
 ### Function ###
 
@@ -175,7 +175,7 @@ between tokens.
 ### Eval ###
 
    - open: `#=`
-   - form: `Form`
+   - value: `Form`
 
 ### Var ###
 
@@ -185,7 +185,12 @@ between tokens.
 ### Unreadable ###
 
    - open: `#<`
-   - rest: ??????????
+   - value: ??????????
+
+### Other dispatch ###
+
+   - open: `/#./`
+   - value: ???????????
 
 ### Form ###
 
