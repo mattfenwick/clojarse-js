@@ -553,7 +553,21 @@ Examples
   
     - value must be less than `8r400` 
 
-# Potential warnings #
+# Linting #
+
+## Not sure ##
+
+  - variables defined, used, used but not defined, defined but not used
+  - formatting -- consistent indentation
+  - known special forms and functions: correct syntax used
+  - maximum number of function parameters, maximum nesting level
+  - operator position is treated specially with respect to special forms:
+  
+        (let [def 1] def)        ; ==> okay
+        
+        ((fn [def] (def 2 3)) +) ; ==> error
+
+## Potential warnings ##
 
 Breaking these isn't illegal, but may indicate an error even if the syntax is okay,
 or may cause an undetected error which confusingly doesn't show up until later:

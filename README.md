@@ -1,3 +1,3 @@
-[clolint-js](http://mattfenwick.github.io/Miscue-js/)
+[clolint-js](http://mattfenwick.github.io/clolint-js/)
 =================
 
