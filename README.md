@@ -17,9 +17,9 @@ Just make sure the right amount of text is matched for each token.
 
 Definitions:
 
-   - macro character: `/[";@^`~()[]{}\\'%#]/`
+   - macro character: one of ``` ";@^`~()[]{}\'%# ```
    
-   - terminating macro character: `/[";@^`~()[]{}\\]/`
+   - terminating macro character: one of ``` ";@^`~()[]{}\ ```
 
 ### Comment ###
 
