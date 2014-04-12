@@ -1,12 +1,19 @@
 'use strict';
 
 var parser = require('./lib/parser'),
+    cleaner = require('./lib/cleaner'),
     fs = require('fs');
 
 
 var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
-var output = JSON.stringify(parser.parse(input), null, 2);
+var parsed = parser.parse(input);
+
+var outstring = ( parsed.status === 'success' ) ?
+        parsed.value.result.map(cleaner.cleanTree) :
+        parsed;
+
+var output = JSON.stringify(outstring, null, 2);
 
 /*
 fs.writeFile('output', 
