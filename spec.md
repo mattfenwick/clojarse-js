@@ -27,17 +27,32 @@ Definitions:
 
    - `/[ \t,\n\r\f]+/`
 
+Also, everything else that Java's `Character.isWhitespace` considers to be whitespace.
+
 
 ### Number ###
 
-   - sign:  `/[-+]/`
+   - sign:  `/[-+]?/`
    - digit: `/\d/`
    - rest: `(not1  ( whitespace  |  macro ) )(*)`
+
+Examples
+
+    // yes
+    4abc
+    4
+    +3
+    
+    // no
+    +
 
 ### Symbol ###
 
    - first:  `(not1  ( whitespace  |  macro ) )  |  '%'`
    - rest:  `(not1  ( whitespace  |  terminatingMacro ))(*)`
+
+Why does this include `%...`?  
+Because: outside of a `#()` function, `%...` is just a normal symbol.
 
 ### Character ###
 
@@ -45,12 +60,13 @@ Definitions:
    - first: `.`
    - rest: `(not1  ( whitespace  |  terminatingMacro ) )(*)`
 
-
 ### String ###
 
    - open: `"`
    - value: `/([^\\"]|\\.)*/` -- `.` includes newlines
    - close: `"`
+
+This is only approximately correct.  how could it go wrong?
 
 ### Regex ###
 
@@ -175,6 +191,11 @@ between tokens.
      Deref   |  Quote   |  Unquote  |  UnquoteSplicing   |
      SyntaxQuote  |  Meta  |  Eval  |  Var
 
+Order in which they're tried does seem to be important for some cases, since
+a given input might match multiple patterns:
+
+  - Number before Symbol
+
 ### Clojure ###
 
     Form(*)
@@ -187,27 +208,31 @@ between tokens.
 Syntax
 
    - escape
-       - opening `\`
-         - error: next char matches `[^btnfr\\"0-7u]`
    
-       - simple
-         - `/[btnfr\\"]/`
+       - open: `\`
 
-       - octal
-         - `/[0-7]{1,3}/`
-         - stops when: 3 octal characters parsed, or whitespace hit,
-           or macro character hit
-         - error: digit is 8 or 9
-         - error: hasn't finished, but encounters character which is not
+       - error: next char matches `/[^btnfr\\"0-7u]/`
+   
+       - value
+       
+         - simple
+           - `/[btnfr\\"]/`
+
+         - octal
+           - `/[0-7]{1,3}/`
+           - stops when: 3 octal characters parsed, or whitespace hit,
+             or macro character hit
+           - error: digit is 8 or 9
+           - error: hasn't finished, but encounters character which is not
            whitespace, octal, or macro
 
-       - unicode
-         - `/u[0-9a-zA-Z]{4}/`
-         - error: less than four hex characters found
+         - unicode
+           - `/u[0-9a-zA-Z]{4}/`
+           - error: less than four hex characters found
 
-   - plain character (not escaped)
-     - `/[^\\"]`
-     - ?? unprintable chars (actual newline, etc.) ??
+   - `/[^\\"]/`: plain character (not escaped)
+
+     - what about ?? unprintable chars (actual newline, etc.) ??
 
 Notes
 
@@ -272,30 +297,21 @@ Syntax
 
        - sign: `/[+-]?/`
        - body
-           - base16
-               - `/0[xX]hex+/
-               - where `hex` is `/[0-9a-zA-Z]/`
-
-           - base8 (not sure about this)
-               - `/0[0-7]+/`
-               - error: `08`
-
-           - base(2-36)
-               - `/[1-9][0-9]?[rR][0-9a-zA-Z]+/`
-               - max radix of 36
-               - digits after `/[rR]/` must correspond to range of radix
-               - error: `35rz` (b/c z out of range for base 35)
-               - error: `37rz` (b/c 36 is maximum radix)
-
-           - base10
-               - `/[1-9][0-9]*/`
-
+          - base16
+              - `/0[xX]hex+/
+              - where `hex` is `/[0-9a-zA-Z]/`
+          - base8 (not sure about this)
+              - `/0[0-7]+/`
+              - error: `08`
+          - base(2-36)
+              - `/[1-9][0-9]?[rR][0-9a-zA-Z]+/`
+          - base10
+              - `/[1-9][0-9]*/`
        - bigint suffix: `/N?/`
 
 Notes
 
    - apparently, can't apply bigint suffix to base(2-36)
-   - integer overflow seems impossible, b/c Clojure uses bigints where necessary
 
 
 Examples
@@ -306,61 +322,171 @@ Examples
     - base 10: `34N`
     - base 16: `0xabcN`
     - base 8: `+007`
-    - custom radix: `36rabcz` (no trailing N)
-    - not an integer: `- 0`
-    - not an integer: `+ 0`
+    - custom radix: `36rabcz`
 
   - float
 
     - `0.`
     - `0.0000`
-    - overflow: `(. Double parseDouble (apply str (range 0 1000)))`
-    - underflow: `(. Double parseDouble (apply str (cons "-" (range 0 1000))))`
     - `3e0`
     - `3e-0`
     - `5.e-4`
-    - parses, but overflows: `4.2e+892`
-    - parses, but underflows: `4.2e-892`
    
   - ratio
 
     - valid: `3/4`
     - valid: `-3/4`
-    - parses, but blows up in evaluation: `4/0`
-    - invalid: `3/ 4`
-    - ?invalid?: `3 /4`
+    - valid: `09/8` (surprising because `09` **is** an error)
     - invalid: `3/-4`
-    - not an error: `09/8` (surprising because `09` **is** an error)
-
 
 ## Char ##
 
-   - long escape
-     - `\newline`
-     - `\space`
-     - `\tab`
-     - `\backspace`
-     - `\formfeed`
-     - `\return`
+   - open: `\`
+   
+   - value
+      - long escape
+        - `newline`
+        - `space`
+        - `tab`
+        - `backspace`
+        - `formfeed`
+        - `return`
 
-   - unicode escape -- *not* identical to string's unicode escape
-     - `\uXXXX` where X is a hex character
-     - hex characters defined by Java's `Character.digit(<some_int>, 16)`
-       - includes some surprises!
-     - value can *not* be between u+D800 and u+DFFF
-       - `\uDFFF` -> error
-       - `(first "\uDFFF")` -> not an error
+      - unicode escape -- *not* identical to string's unicode escape
+        - `XXXX` where X is a hex character
+        - hex characters defined by Java's `Character.digit(<some_int>, 16)`
+          - includes some surprises!
 
-   - octal escape
-     - `oX`, `oXX`, or `oXXX` where X is an octal character
-     - octal characters defined by Java's `Character.digit(<som_int>, 8)`
-       - includes surprises!
-     - value can not be greater than `8r377`
+      - octal escape
+        - `oX`, `oXX`, or `oXXX` where X is an octal character
+        - octal characters defined by Java's `Character.digit(<som_int>, 8)`
+          - includes surprises!
 
-   - simple character (not escaped)
-     - any character, including `n`, `u`, `\`, an actual tab, an actual space,
-       an actual newline
-     - what about unprintable characters?
+      - simple character (not escaped)
+        - any character, including `n`, `u`, `\`, an actual tab, space, newline
+        - what about unprintable characters?
+
+Okay: `[\"[]]` -- `[` is a terminating macro, so the char is `\"`.
+
+Not okay: `[\"#(vector)]` -- `(` is the first terminating macro (`#` is 
+ not a terminating macro), and `\"#` is not a valid character.
+
+
+## Symbol ##
+
+Syntax
+
+   - special errors
+     - `::` anywhere but at the beginning
+     - if it matches `/([:]?)([^\d/].*/)?(/|[^\d/][^/]*)/`, and:
+       - `$2 =~ /:\/$/` -> error
+       - `$3 =~ /:$/` -> error
+
+   - value
+     - reserved
+       - `nil`
+       - `true`
+       - `false`
+
+     - not reserved
+        - type: starts with:
+          - `::` -- auto keyword
+          - `:`  -- keyword
+          - else -- symbol
+
+        - namespace (optional)
+          - `/[^/]+/`
+          - `/`
+       
+        - name
+          - `/.+/`
+   
+   - code used to verify against implementation:
+   
+        (fn [my-string]
+          (let [f (juxt type namespace name)]
+            (try 
+              (f (eval (read-string my-string)))
+              (catch RuntimeException e 
+                (.getMessage e)))))
+ 
+Examples
+
+    input:  abc::def
+    Invalid token: abc::def
+
+    input:  abc
+    java.lang.RuntimeException: Unable to resolve symbol: abc in this context, compiling:(/tmp/form-init7040393767260359100.clj:1:130)
+
+    input:  :abc
+    [clojure.lang.Keyword nil abc]
+
+    input:  ::abc
+    [clojure.lang.Keyword user abc]
+
+    input:  'abc
+    [clojure.lang.Symbol nil abc]
+
+    input:  :::abc
+    Invalid token: :::abc
+
+    input:  '%234
+    [clojure.lang.Symbol nil %234]
+
+    input:  '////
+    Invalid token: ////
+
+    input:  'x////x
+    [clojure.lang.Symbol x ///x]
+
+    input:  'q/a/b
+    [clojure.lang.Symbol q a/b]
+
+    input:  'qa
+    [clojure.lang.Symbol nil qa]
+
+    input:  ::stuff.core/def
+    [clojure.lang.Keyword stuff.core def]
+
+    input:  '/abc
+    Invalid token: /abc
+
+    input:  :/abc
+    Invalid token: :/abc
+
+    input:  :8/abc
+    [clojure.lang.Keyword 8 abc]
+
+    input:  ::8/abc
+    Invalid token: ::8/abc
+
+    input:  :qrs/
+    Invalid token: :qrs/
+
+    input:  :q/a/b
+    [clojure.lang.Keyword q a/b]
+
+    input:  'clojure.core//
+    [clojure.lang.Symbol clojure.core /]
+
+    input:  '/
+    [clojure.lang.Symbol nil /]
+
+    input:  '/ab
+    Invalid token: /ab
+
+## Special notes ##
+
+ - `\n`
+   - in a character: just the 'n' character (ASCII 110), not a newline escape
+   - in a string: the one-character string for a newline escape
+   - use `\newline` for the newline character
+
+# Further constraints #
+
+## Metadata ##
+
+ - `^ {} {}` is valid meta-data, but `^ 3 {}` and `^ {} 3` are not
 
 ## Symbol ##
 
@@ -375,122 +501,62 @@ Examples
      -  `:abc/def` apparently is always valid
      - when there *is* an `abc` namespace, `(= :abc/def ::abc/def)` is true
 
-   - special errors
-     - `::` anywhere but at the beginning
-     - if it matches `/([:]?)([^\d/].*/)?(/|[^\d/][^/]*)/`, and:
-       - `$2 =~ /:\/$/` -> error
-       - `$3 =~ /:$/` -> error
-
    - starts with `%`
       - inside `#(...)`: 
-        - `%2z` -> error (invalid number)
-        - `%abc` -> error
-        - `%3.2` -> okay, same as `%3`
-        - `%21` -> error, max is 20
-        - `%8r20` -> okay, same as `%16`
-        - `abc/%x`, `abc/%2` are both okay -- resolves to free variables
+        - okay: `%`, `%&`
+        - okay: `%<number>` -- all numbers allowed -- calls `Number.intValue` to get an int
+          - okay: `%1`
+          - okay: `%3.2`  -- same as `%3`
+          - okay: `%8r20` -- same as `%16`
+          - error: `%0`  -- min is 1
+          - error: `%21` -- max is 20
+          - error: `%2z` -- invalid number
+        - okay: `abc/%x`, `abc/%2` -- resolve to free variables
+        - error: `%abc`
       - outside #(...):
         - `%2z` -> okay
    
-   - reserved
-     - `nil`
-     - `true`
-     - `false`
+## Char ##
 
-   - type: starts with:
-     - `::` -- auto keyword
-     - `:`  -- keyword
-     - else -- symbol
+  - unicode escape
+    - value can *not* be between u+D800 and u+DFFF
+      - `\uDFFF` -> error
+      - `(first "\uDFFF")` -> not an error
 
-   - namespace
-     - `/[^/]+/`
-     - `/`
+  - octal escape
+    - value can not be greater than `8r377`
+
+## Number ##
+
+  - integer
+  
+     - integer overflow seems impossible, b/c Clojure uses bigints where necessary
+     - max radix of 36
+       - error: `37rz` (b/c 36 is maximum radix)
+     - digits after `/[rR]/` must correspond to range of radix
+       - error: `35rz` (b/c z out of range for base 35)
+
+  - float
+
+    - overflow: `(. Double parseDouble (apply str (range 0 1000)))`
+    - underflow: `(. Double parseDouble (apply str (cons "-" (range 0 1000))))`
+    - but overflows: `4.2e+892`
+    - but underflows: `4.2e-892`
    
-   - name
-     - `/.+/`
-   
-   - code used to verify against implementation:
-   
-        (fn [my-string]
-          (let [f (juxt type namespace name)]
-            (try 
-              (f (eval (read-string my-string)))
-              (catch RuntimeException e 
-                (.getMessage e)))))
- 
-   - examples
-   
-        input:  abc::def
-        Invalid token: abc::def
+  - ratio
 
-        input:  abc
-        java.lang.RuntimeException: Unable to resolve symbol: abc in this context, compiling:(/tmp/form-init7040393767260359100.clj:1:130)
+    - blows up: `4/0`
 
-        input:  :abc
-        [clojure.lang.Keyword nil abc]
+## String ##
 
-        input:  ::abc
-        [clojure.lang.Keyword user abc]
+  - octal escape
+  
+    - value must be less than `8r400` 
 
-        input:  'abc
-        [clojure.lang.Symbol nil abc]
+# Potential warnings #
 
-        input:  :::abc
-        Invalid token: :::abc
+Breaking these isn't illegal, but may indicate an error even if the syntax is okay,
+or may cause an undetected error which confusingly doesn't show up until later:
 
-        input:  '%234
-        [clojure.lang.Symbol nil %234]
-
-        input:  '////
-        Invalid token: ////
-
-        input:  'x////x
-        [clojure.lang.Symbol x ///x]
-
-        input:  'q/a/b
-        [clojure.lang.Symbol q a/b]
-
-        input:  'qa
-        [clojure.lang.Symbol nil qa]
-
-        input:  ::stuff.core/def
-        [clojure.lang.Keyword stuff.core def]
-
-        input:  '/abc
-        Invalid token: /abc
-
-        input:  :/abc
-        Invalid token: :/abc
-
-        input:  :8/abc
-        [clojure.lang.Keyword 8 abc]
-
-        input:  ::8/abc
-        Invalid token: ::8/abc
-
-        input:  :qrs/
-        Invalid token: :qrs/
-
-        input:  :q/a/b
-        [clojure.lang.Keyword q a/b]
-
-        input:  'clojure.core//
-        [clojure.lang.Symbol clojure.core /]
-
-        input:  '/
-        [clojure.lang.Symbol nil /]
-
-        input:  '/ab
-        Invalid token: /ab
-
-## Special notes ##
-
- - `\n`
-   - in a character: just the 'n' character (ASCII 110), not a newline escape
-   - in a string: the one-character string for a newline escape
-   - use `\newline` for the newline character
-
-## Hierarchical forms ##
-
- - `^ {} {}` is valid meta-data, but `^ 3 {}` and `^ {} 3` are not
+  - string, regex, number, symbol, char followed by whitespace
 
