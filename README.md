@@ -563,10 +563,19 @@ Examples
 
 # Linting #
 
+## Definitely ##
+
+ - repeated name usage in function or let parameter lists
+ 
+        (defn f [x x] x)
+        (fn [x x] x)
+        (let [x 1 x 2] x)
+
 ## Not sure ##
 
   - variables defined, used, used but not defined, defined but not used
   - formatting -- consistent indentation
+  - ?shadowing?
   - known special forms and functions: correct syntax used
   - maximum number of function parameters, maximum nesting level
   - operator position is treated specially with respect to special forms:
