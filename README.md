@@ -247,8 +247,12 @@ Notes
    - macro and whitespace characters have special meaning inside strings:
      they terminate octal and unicode escape sequences
    - octal and unicode escapes use Java's `Character.digit` and
-     `Character.isDigit`, so they seem to work other forms of digits,
+     `Character.isDigit`, so they seem to work on other forms of digits,
      such as u+ff13
+
+            "\uＡＢＣＤ" is the 1 character string "ꯍ"
+            // b/c each of ＡＢＣＤ is a digit according to Character.digit(ch, 16)
+
 
 Examples
 
@@ -369,6 +373,7 @@ Examples
         - `oX`, `oXX`, or `oXXX` where X is an octal character
         - octal characters defined by Java's `Character.digit(<som_int>, 8)`
           - includes surprises!
+        - value must be between 0 and 255 (8r377)
 
       - simple character (not escaped)
         - any character, including `n`, `u`, `\`, an actual tab, space, newline
