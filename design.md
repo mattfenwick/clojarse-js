@@ -2,7 +2,9 @@
 
  - structure parsing
  
-   1. determine start, end of each hierarchical form and token (errors possible)
+   1. determine start, end of each hierarchical form and token
+   
+     - errors possible:  first one will terminate parsing
  
    2. clean the tree
  
@@ -11,7 +13,17 @@
  
  - token parsing
  
-   1. determine structure of tokens  (errors possible)
+   1. determine structure of tokens 
+   
+     - errors possible: what should be done with them?
+       - omitted from output tree
+         - no evidence of errors in output
+         - perhaps surprising, unexpected results
+       - filled in with default value
+         - will cause incorrect results (i.e. two errors in map keys: duplicate default values)
+       - left in as explicitly marked errors
+         - probably the best choice as it's the most flexible
+         - later traversals will have to take them into account
  
    2. clean the token sub-trees
  
