@@ -210,7 +210,10 @@ a given input might match multiple patterns:
 
 
 
-# Token sub-parsers #
+# Token parsers #
+
+Goal of this phase: determine the internal structure of the number, symbol,
+char, string, and regex tokens
 
 ## String ##
 
@@ -374,7 +377,6 @@ Examples
         - `oX`, `oXX`, or `oXXX` where X is an octal character
         - octal characters defined by Java's `Character.digit(<som_int>, 8)`
           - includes surprises!
-        - value must be between 0 and 255 (8r377)
 
       - simple character (not escaped)
         - any character, including `n`, `u`, `\`, an actual tab, space, newline
@@ -384,7 +386,6 @@ Okay: `[\"[]]` -- `[` is a terminating macro, so the char is `\"`.
 
 Not okay: `[\"#(vector)]` -- `(` is the first terminating macro (`#` is 
  not a terminating macro), and `\"#` is not a valid character.
-
 
 Examples
 
@@ -507,12 +508,41 @@ Examples
     input:  '/ab
     Invalid token: /ab
 
+
+
+# Creating values (done with syntax) #
+
+String
+
+  - octal escape: value must be less than `8r400` 
+
+Regex
+
+ - uses `java.util.regex.Pattern.compile` for definition of accepted input
+
+Number
+
+ - ratio: denominator != 0
+ - baseN: digits within range of radix, radix <= 36
+
+Symbol
+
+Keyword, auto-keyword
+
+Reserved
+
+Char
+
+ - octal escape: <= 255
+
 ## Special notes ##
 
  - `\n`
    - in a character: just the 'n' character (ASCII 110), not a newline escape
    - in a string: the one-character string for a newline escape
    - use `\newline` for the newline character
+
+
 
 # Further constraints #
 
@@ -581,34 +611,6 @@ Examples
 
 ## String ##
 
-  - octal escape
-  
-    - value must be less than `8r400` 
-
-
-
-# Creating values (done with syntax) #
-
-String
-
-Regex
-
- - uses `java.util.regex.Pattern.compile` for definition of accepted input
-
-Number
-
- - ratio: denominator != 0
- - baseN: digits within range of radix, radix <= 36
-
-Symbol
-
-Keyword, auto-keyword
-
-Reserved
-
-Char
-
- - octal escape: <= 255
 
 
 
