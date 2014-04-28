@@ -209,6 +209,7 @@ a given input might match multiple patterns:
     Form(*)
 
 
+
 # Token sub-parsers #
 
 ## String ##
@@ -383,6 +384,24 @@ Okay: `[\"[]]` -- `[` is a terminating macro, so the char is `\"`.
 
 Not okay: `[\"#(vector)]` -- `(` is the first terminating macro (`#` is 
  not a terminating macro), and `\"#` is not a valid character.
+
+
+Examples
+
+ - good:
+    - `\u0041`
+    - `\u`
+    - `\o123`
+    - `\o`
+    - `\o7`
+    - `\o007`
+    - `\tab`
+ - bad:
+    - `\u0`
+    - `\o400`
+    - `\o8`
+    - `\o3777`
+    - `\tabs` 
 
 
 ## Symbol ##
@@ -565,6 +584,33 @@ Examples
   - octal escape
   
     - value must be less than `8r400` 
+
+
+
+# Creating values (done with syntax) #
+
+String
+
+Regex
+
+ - uses `java.util.regex.Pattern.compile` for definition of accepted input
+
+Number
+
+ - ratio: denominator != 0
+ - baseN: digits within range of radix, radix <= 36
+
+Symbol
+
+Keyword, auto-keyword
+
+Reserved
+
+Char
+
+ - octal escape: <= 255
+
+
 
 # Linting #
 
