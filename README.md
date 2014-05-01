@@ -546,6 +546,10 @@ Char
 
 # Further constraints #
 
+## Var ##
+
+ - must be a symbol -- [ref](http://clojure.org/special_forms#var)
+
 ## Metadata ##
 
  - `^ {} {}` is valid meta-data, but `^ 3 {}` and `^ {} 3` are not
