@@ -32,6 +32,12 @@ module("parser/full", function() {
     test("char octal", function() {
         deepEqual(out.body[3].value._name, 'octal');
     });
+    
+    test("char error", function() {
+        var out = F.fullParse("\\bac"); // also for \obac.  but is already correct for \ubac
+        deepEqual(out.body[0].status, 'error');
+        deepEqual(out.body[0].value[0][0], 'char');
+    });
 
 });
 
