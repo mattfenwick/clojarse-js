@@ -59,6 +59,10 @@
 
     (recur exprs*)
 
+ - ?? error: if not in a `loop` or `fn` ??
+ - ?? error: if not in tail position ??
+ - ?? error: if the number of args doesn't match the `loop`/`fn` ??
+
 ### throw ###
 
     (throw expr)

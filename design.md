@@ -1,6 +1,6 @@
-## Phases ##
+# Phases #
 
- - structure parsing
+### parse: structure ###
  
    1. determine start, end of each hierarchical form and token
    
@@ -11,7 +11,7 @@
      - get rid of junk attributes which are just artifacts of the parsing process,
        such as first/rest or arrays instead of strings
  
- - token parsing
+### parse: tokens ###
  
    1. determine structure of tokens 
    
@@ -29,17 +29,20 @@
  
      - get rid of junk attributes from token sub-parsing
  
- - normalize representation of (some/all) token types
+### normalize (some/all) token types ###
  
-   - numbers -- `8r77` -> `63`
+   - integers -- `8r77` -> `63`
+   - floats -- ???
+   - ratios -- ???
    - strings -- `"\u0041"` -> `"A"`
    - chars -- `\u0041` -> `\A`
-   - regexes -- ????
+   - regexes -- ???
    - symbols -- ?? nothing ??
+   - keywords -- ?? nothing ??
+   - auto-keywords -- ?? nothing ??
 
-## Additional, questionable phases ##
-
- - build a 'real' ast
+### expand built-in reader macros ###
  
-   - would special forms and macros have to be recognized?
+   - `#'abc` -> `(var abc)`
+   - `'qrs` -> `(quote qrs)`
 
