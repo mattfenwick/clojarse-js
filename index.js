@@ -1,19 +1,12 @@
 'use strict';
 
-var parser = require('./lib/parser/structure'),
-    fullparser = require('./lib/parser/full'),
+var fullparser = require('./lib/parser/full'),
     fs = require('fs');
 
 
 var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
-var parsed = parser.parse(input);
-
-//console.log(Array.isArray(parsed));
-
-if ( !parsed.status ) {
-    parsed = parsed.map(fullparser.parseTokensInTree);
-}
+var parsed = fullparser.fullParse(input);
 
 var output = JSON.stringify(parsed, null, 2);
 
