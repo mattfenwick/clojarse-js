@@ -38,6 +38,19 @@ module("parser/full", function() {
         deepEqual(out.body[0].status, 'error');
         deepEqual(out.body[0].value[0][0], 'char');
     });
+    
+    var coarse = '1 1.2 1/3 x/y :x/y ::x/y "" #"" \\z \\tab';
+    
+    test("coarse test", function() {
+        deepEqual(F.fullParse(coarse).body.map(function(x) {return x._name;}),
+                  ['integer', 'float', 'ratio', 'symbol', 'keyword',
+                   'auto keyword', 'string', 'regex', 'char', 'char']);
+    });
+    
+    var ints = '1 +1N 0 0756 -0756 0x32f 36r0az',
+        errors = '08 100r0 0x0g';
+    
+    var floats = '8M 8.2';
 
 });
 
