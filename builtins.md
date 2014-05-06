@@ -9,6 +9,10 @@
  - error: `(def)` -- too few args
  - warning: `(def x)` -- missing init
  - error: `(def x "doc" 4 5)` -- too many args
+ 
+ - error: `(def 3 "abc")` -- need symbol for 2nd arg
+ 
+ - error: `(def x 3 "abc")` -- 4-arg version needs string for 3rd arg
 
 ### if ###
 
