@@ -45,4 +45,5 @@
  
    - `#'abc` -> `(var abc)`
    - `'qrs` -> `(quote qrs)`
+   - `@abc` -> `(deref abc)`
 

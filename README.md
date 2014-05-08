@@ -634,6 +634,8 @@ Char
 
  - `%...` variables names inside shorthand functions
 
+ - eval reader -- `#=xyz` -- permits only a symbol or a non-empty list
+ 
 ## Not sure ##
 
   - variables defined, used, used but not defined, defined but not used
