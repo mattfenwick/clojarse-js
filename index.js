@@ -18,7 +18,7 @@ fs.writeFile('output',
     JSON.stringify(parser.parse(input), null, 2),
     {'encoding': 'utf8'});
 */
-process.stdout.write(output + "\n");
+// process.stdout.write(output + "\n");
 
 
 module.exports = {

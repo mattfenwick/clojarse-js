@@ -75,6 +75,13 @@
 
     (try expr* catch-clause* finally-clause?)
 
+ - subordinate 'special' forms:  only resolved as such inside a `try`, and
+   at a particular position inside the `try`:
+
+        (catch classname name expr*)
+
+        (finally expr*)
+
 ### monitor-enter & monitor-exit ###
 
     (monitor-enter x)

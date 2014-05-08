@@ -628,6 +628,12 @@ Char
         (fn [x x] x)
         (let [x 1 x 2] x)
 
+ - no nested shorthand functions
+ 
+        #(map #(+ 1 %1) %1)
+
+ - `%...` variables names inside shorthand functions
+
 ## Not sure ##
 
   - variables defined, used, used but not defined, defined but not used
