@@ -8,8 +8,7 @@ var fullparser = require('./lib/parser/full'),
 var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
 var parsed = fullparser.fullParse(input);
-
-specials.check_specials(parsed); // TODO only if it's successful
+parsed.fmap(specials.check_specials);
 
 var output = JSON.stringify(parsed, null, 2);
 
@@ -18,7 +17,7 @@ fs.writeFile('output',
     JSON.stringify(parser.parse(input), null, 2),
     {'encoding': 'utf8'});
 */
-// process.stdout.write(output + "\n");
+process.stdout.write(output + "\n");
 
 
 module.exports = {
