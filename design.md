@@ -45,5 +45,7 @@
  
    - `#'abc` -> `(var abc)`
    - `'qrs` -> `(quote qrs)`
-   - `@abc` -> `(deref abc)`
+   - `@abc` -> `(clojure.core/deref abc)`
+   - `~abc` -> `(clojure.core/unquote abc)`
+   - `~@abc` -> `(clojure.core/unquote-splicing abc)`
 

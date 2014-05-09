@@ -552,7 +552,35 @@ Char
 
 ## Metadata ##
 
- - `^ {} {}` is valid meta-data, but `^ 3 {}` and `^ {} 3` are not
+in `^ {} {}`:
+
+ - metadata must be symbol, keyword, string, or map
+ - value must implement IMeta
+ 
+invalid:
+ 
+ - `^ 3 {}` 
+ - `^ {} 3`
+
+doesn't implement IMeta:
+
+ - number
+ - string
+ - reserved
+ - regex
+ - char
+
+not sure:
+
+ - symbol -- but it looks like they can: `(meta (first '(^:a b)))` -> `{:a true}`
+
+does implement IMeta:
+
+ - set
+ - function
+ - table
+ - list
+ - vector
 
 ## Symbol ##
 
