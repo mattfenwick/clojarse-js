@@ -31,7 +31,7 @@ Definitions:
    - value: `/[ \t,\n\r\f]+/`
 
 Also, everything else that Java's `Character.isWhitespace` considers to be whitespace.
-
+See http://docs.oracle.com/javase/7/docs/api/java/lang/Character.html#isWhitespace(int).
 
 ### Number ###
 
