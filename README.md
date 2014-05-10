@@ -35,6 +35,12 @@ See http://docs.oracle.com/javase/7/docs/api/java/lang/Character.html#isWhitespa
 
 ### Number ###
 
+basically, if it starts with a digit, or the combination of +/- followed by a
+digit, it's a number.
+
+See http://docs.oracle.com/javase/7/docs/api/java/lang/Character.html#isDigit(int)
+for what is considered to be a digit.
+
    - sign:  `/[-+]?/`
    - first: `/\d/`
    - rest: `(not1  ( whitespace  |  macro ) )(*)`

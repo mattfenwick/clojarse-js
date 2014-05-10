@@ -35,7 +35,7 @@ module("parser/structure/char", function() {
         ["\\a#'%{}", "a#'%", "only terminating macros and whitespace end a char"]
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>', function() {
+        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
             var parsed = S.parse(c[0]);
             deepEqual(parsed.status, 'success');
             deepEqual(parsed.value.body[0]._name, 'char');
@@ -46,11 +46,17 @@ module("parser/structure/char", function() {
 
 module("parser/structure/number", function() {
     var cases = [
-    
+        ['4 ', '4'],
+        ["+3'x", "+3"],
+        ['-2xyz#{}', '-2xyz', 'ended by whitespace and macros'],
+        ['8????()', '8????']
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>', function() {
-            deepEqual(true, false);
+        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
+            var parsed = S.parse(c[0]);
+            deepEqual(parsed.status, 'success');
+            deepEqual(parsed.value.body[0]._name, 'number');
+            deepEqual(parsed.value.body[0].value, c[1]);
         });
     });
 });
