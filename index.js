@@ -16,13 +16,16 @@ ast.fmap(specials.check_specials);
 // var output = JSON.stringify(parsed, null, 2) + JSON.stringify(ast, null, 2) + ast.fmap(A.dump).value;
 // var output = JSON.stringify(ast, null, 2) + '\n' + ast.fmap(A.dump).value;
 var output = ast.fmap(A.dump).mapError(JSON.stringify).value;
+// var output = ast.mapError(JSON.stringify).value;
 
 /*
 fs.writeFile('output', 
     JSON.stringify(parser.parse(input), null, 2),
     {'encoding': 'utf8'});
 */
-process.stdout.write(output + "\n");
+process.stdout.write((typeof output === 'string' ? 
+                      output :
+                      JSON.stringify(output))   + "\n");
 
 
 module.exports = {
