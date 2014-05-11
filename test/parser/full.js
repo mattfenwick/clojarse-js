@@ -13,6 +13,7 @@ module("parser/full", function() {
     var inp = '\\b \\u0041 \\backspace \\o101',
         out = F.fullParse(inp);
 
+    /*
     test("char", function() {
         deepEqual(out.value.body.length, 4);
     });
@@ -32,7 +33,7 @@ module("parser/full", function() {
     test("char octal", function() {
         deepEqual(out.value.body[3].value._name, 'octal');
     });
-    /*
+
     test("char error", function() {
         var out = F.fullParse("\\bac"); // also for \obac.  but is already correct for \ubac
         deepEqual(out.value.body[0].status, 'error');

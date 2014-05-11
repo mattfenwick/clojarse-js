@@ -31,6 +31,7 @@ module("parser/tokens/char", function() {
 module("parser/tokens/integer", function() {
     function int(sign, suffix, base, digits) {
         return {
+            '_name': 'integer', '_state': [1,1],
             'sign': sign, 'suffix': suffix,
             'base': base, 'digits': digits
         };
@@ -43,15 +44,62 @@ module("parser/tokens/integer", function() {
         ['36r123zZ' , int(null, null, 36, '123zZ')  ]
     ];
     cases.map(function(c) {
-        var t = c[1];
-        test('<' + c[0] + '>  ->  <' + JSON.stringify(t) + '>', function() {
+        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
             var p = T.parse_('number', c[0], [1, 1]);
             deepEqual(p.status, 'success');
-            deepEqual(p.value._name, 'integer');
-            deepEqual(p.value.sign, t.sign);
-            deepEqual(p.value.suffix, t.suffix);
-            deepEqual(p.value.base, t.base);
-            deepEqual(p.value.digits, t.digits);
+            deepEqual(p.value, c[1]);
+        });
+    });
+});
+
+module("parser/tokens/float", function() {
+    function ex(sign, pow) {
+        return {'sign': sign, 'power': pow};
+    }
+    function float(sign, int, dec, exp, suff) {
+        return {
+            '_name': 'float', '_state': [1,1], 
+            'sign': sign, 'int': int,
+            'decimal': dec, 'suffix': suff, 
+            'exponent': exp
+        };
+    }
+    var cases = [
+        ['4M'           , float(null, '4', '', null, 'M')               ],
+        ['-0.'          , float('-', '0', '', null, null)               ],
+        ['+875.623e-22M', float('+', '875', '623', ex('-', '22'), 'M')  ],
+        ['01238M'       , float(null, '01238', '', null, 'M')           ]
+    ];
+    cases.map(function(c) {
+        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
+            var p = T.parse_('number', c[0], [1, 1]);
+//            console.log(JSON.stringify(p));
+            deepEqual(p.status, 'success');
+            deepEqual(p.value, c[1]);
+        });
+    });
+});
+
+module("parser/tokens/ratio", function() {
+    function ratio(sign, num, den) {
+        return {
+            '_name': 'ratio', '_state': [1,1], 
+            'sign': sign, 'numerator': num,
+            'denominator': den 
+        };
+    }
+    var cases = [
+        ['0/0'      , ratio(null, '0', '0')     ],
+        ['01238/1'  , ratio(null, '01238', '1') ],
+        ['-198/202' , ratio('-', '198', '202')  ],
+        ['+18/34'   , ratio('+', '18', '34')    ]
+    ];
+    cases.map(function(c) {
+        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
+            var p = T.parse_('number', c[0], [1, 1]);
+//            console.log(JSON.stringify(p));
+            deepEqual(p.status, 'success');
+            deepEqual(p.value, c[1]);
         });
     });
 });
