@@ -345,6 +345,7 @@ Examples
     - base 16: `0xabcN`
     - base 8: `+007`
     - custom radix: `36rabcz`
+    - invalid integer: `01238`
 
   - float
 
