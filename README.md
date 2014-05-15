@@ -92,12 +92,9 @@ doesn't implement IMeta:
  - regex
  - char
 
-not sure:
-
- - symbol -- but it looks like they can: `(meta (first '(^:a b)))` -> `{:a true}`
-
 does implement IMeta:
 
+ - symbol
  - set
  - function
  - table
