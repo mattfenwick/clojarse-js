@@ -76,7 +76,7 @@ unicode escape: value can *not* be between u+D800 and u+DFFF
 
 in `^ {} {}`:
 
- - metadata must be symbol, keyword, string, or map
+ - metadata must be symbol, keyword, auto keyword, string, or map
  - value must implement IMeta
  
 invalid:
