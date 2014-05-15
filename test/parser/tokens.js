@@ -106,13 +106,13 @@ module("parser/tokens/ratio", function() {
 
 module("parser/tokens/number errors", function() {
     var cases = [
-        ['01238', 'invalid octal digit']
+        ['01238', ['octal digit', [1,5]] ]
     ];
     cases.map(function(c) {
         test('<' + c[0] + '>  ->  ' + c[1], function() {
             var p = T.parse_('number', c[0], [1,1]);
-            deepEqual(p.value, '');
             deepEqual(p.status, 'error');
+            deepEqual(p.value[p.value.length - 1], c[1]);
         });
     });
 });
