@@ -41,7 +41,8 @@ module("parser/tokens/integer", function() {
         ['-077'     , int('-', null, 8, '77')       ],
         ['+123'     , int('+', null, 10, '123')     ],
         ['0'        , int(null, null, 10, '0')      ],
-        ['36r123zZ' , int(null, null, 36, '123zZ')  ]
+        ['36r123zZ' , int(null, null, 36, '123zZ')  ],
+        ['40r888'   , int(null, null, 40, '888')    ]
     ];
     cases.map(function(c) {
         test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
@@ -67,6 +68,7 @@ module("parser/tokens/float", function() {
     var cases = [
         ['4M'           , float(null, '4', '', null, 'M')               ],
         ['-0.'          , float('-', '0', '', null, null)               ],
+        ['18e37'        , float(null, '18', '', ex(null, '37'), null)   ],
         ['+875.623e-22M', float('+', '875', '623', ex('-', '22'), 'M')  ],
         ['01238M'       , float(null, '01238', '', null, 'M')           ]
     ];
@@ -106,7 +108,8 @@ module("parser/tokens/ratio", function() {
 
 module("parser/tokens/number errors", function() {
     var cases = [
-        ['01238', ['octal digit', [1,5]] ]
+        ['01238',   ['octal digit', [1,5]] ],
+        ['4/z',     ['denominator', [1,3]] ]
     ];
     cases.map(function(c) {
         test('<' + c[0] + '>  ->  ' + c[1], function() {
