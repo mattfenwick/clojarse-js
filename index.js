@@ -12,12 +12,16 @@ var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
 var parsed = fullparser.fullParse(input);
 var ast = parsed.fmap(builder.build);
-ast.fmap(specials.check_specials);
+
 ast.fmap(function(a) {
     var state = {},
         log = [];
+    specials.check_specials(a, state, log);
     M.traverse(a, state, log);
-    console.log('misc checks -- ' + JSON.stringify([state, log]));
+    console.log('state -- ' + JSON.stringify(state));
+    log.map(function(l) {
+        console.log(JSON.stringify(l) + "\n");
+    });
 });
 
 // var output = JSON.stringify(parsed, null, 2) + JSON.stringify(ast, null, 2) + ast.fmap(A.dump).value;
