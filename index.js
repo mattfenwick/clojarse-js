@@ -1,7 +1,6 @@
 'use strict';
 
 var fullparser = require('./lib/parser/full'),
-    specials = require('./lib/specials'),
     A = require('./lib/ast'),
     M = require('./lib/misc'),
     builder = require('./lib/astbuilder'),
