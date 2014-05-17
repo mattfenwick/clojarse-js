@@ -16,12 +16,12 @@ var ast = parsed.fmap(builder.build);
 ast.fmap(function(a) {
     var state = {},
         log = [];
-    specials.check_specials(a, state, log);
     M.traverse(a, state, log);
     console.log('state -- ' + JSON.stringify(state));
     log.map(function(l) {
-        console.log(JSON.stringify(l) + "\n");
+        console.log(JSON.stringify(l));
     });
+    console.log();
 });
 
 // var output = JSON.stringify(parsed, null, 2) + JSON.stringify(ast, null, 2) + ast.fmap(A.dump).value;
