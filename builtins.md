@@ -26,10 +26,6 @@
 
     (do exprs*)
 
-### let ###
-
-    (let [bindings* ] exprs*)  ; see http://clojure.org/special_forms#binding-forms
-
 ### quote ###
 
     (quote form) ; same as 'form
@@ -46,19 +42,6 @@
  - ?? error: `(var oops)` -- if `oops` is undefined ??
  - warning: `(var abc ghi)` -- all but 1st arg are ignored
  
-### fn ###
-
-    (fn name? [params* ] exprs*)
-    (fn name? ([params* ] exprs*)+)
-
-    ; since 1.1:
-    (fn name? [params* ] condition-map? exprs*)
-    (fn name? ([params* ] condition-map? exprs*)+)
-
-### loop ###
-
-    (loop [bindings* ] exprs*)
-
 ### recur ###
 
     (recur exprs*)
@@ -112,6 +95,11 @@
     ; distinct from above -- see http://clojure.org/vars#set
     (set! var-symbol expr)
 
+### fn* ###
+
+### let* ###
+
+### loop* ###
 
 
 
@@ -131,6 +119,24 @@ see http://clojure.org/macros
 
     (Classname. args*)
 
+### fn ###
+
+    (fn name? [params* ] exprs*)
+    (fn name? ([params* ] exprs*)+)
+
+    ; since 1.1:
+    (fn name? [params* ] condition-map? exprs*)
+    (fn name? ([params* ] condition-map? exprs*)+)
+
+binding forms: see http://clojure.org/special_forms#binding-forms
+
+### let ###
+
+    (let [bindings* ] exprs*)
+
+### loop ###
+
+    (loop [bindings* ] exprs*)
 
 
 
