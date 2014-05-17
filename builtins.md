@@ -2,6 +2,16 @@
 
 [main source](http://clojure.org/special_forms)
 
+In clojure, to check if something is a special form, use `special-symbol?`:
+
+    => (special-symbol? 'letfn*)
+    true
+    => (special-symbol? 'fn)
+    false
+    => (special-symbol? '.)
+    true
+
+
 ### def ###
 
     (def symbol doc-string? init?)
@@ -100,6 +110,12 @@
 ### let* ###
 
 ### loop* ###
+
+### letfn* ###
+
+### case* ###
+
+### clojure.core/import* (maybe -- not sure) ###
 
 
 
