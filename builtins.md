@@ -115,7 +115,11 @@ In clojure, to check if something is a special form, use `special-symbol?`:
 
 ### case* ###
 
-### clojure.core/import* (maybe -- not sure) ###
+### clojure.core/import* ###
+
+### deftype* ###
+
+### reify* ###
 
 
 
