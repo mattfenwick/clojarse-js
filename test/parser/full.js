@@ -45,7 +45,7 @@ module("parser/full", function() {
     test("coarse test", function() {
         deepEqual(F.fullParse(coarse).body.map(function(x) {return x._name;}),
                   ['integer', 'float', 'ratio', 'symbol', 'keyword',
-                   'auto keyword', 'string', 'regex', 'char', 'char']);
+                   'autokey', 'string', 'regex', 'char', 'char']);
     });
     
     */

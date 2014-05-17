@@ -23,7 +23,7 @@ module("parser/tokens/char", function() {
             deepEqual(p.status, 'success');
             deepEqual(p.value._name, 'char');
             deepEqual(p.value.value, c[1]);
-            deepEqual(p.value.type, c[2]);
+            deepEqual(p.value.kind, c[2]);
         });
     });
 });
