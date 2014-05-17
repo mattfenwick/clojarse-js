@@ -63,9 +63,12 @@
 
     (recur exprs*)
 
- - ?? error: if not in a `loop` or `fn` ??
- - ?? error: if not in tail position ??
+ - error: if not in tail position
  - ?? error: if the number of args doesn't match the `loop`/`fn` ??
+
+ - warning: if not in a `loop` or `fn`
+   but apparently, it is legal to have something like `(recur)` at the 
+   top-level in a module
 
 ### throw ###
 
