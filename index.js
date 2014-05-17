@@ -13,10 +13,10 @@ var parsed = fullparser.fullParse(input);
 var ast = parsed.fmap(builder.build);
 
 ast.fmap(function(a) {
-    var state = {},
+    var state = {'symbols': {}},
         log = [];
     T.default_traverse(a, state, log);
-    console.log('state -- ' + JSON.stringify(state));
+    console.log('state -- ' + JSON.stringify(state, null, 2));
     log.map(function(l) {
         console.log(JSON.stringify(l));
     });
