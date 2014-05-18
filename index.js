@@ -3,6 +3,8 @@
 var fullparser = require('./lib/parser/full'),
     D = require('./lib/astdumper'),
     T = require('./lib/treechecker'),
+    L = require('./lib/log'),
+    S = require('./lib/state'),
     builder = require('./lib/astbuilder'),
     fs = require('fs');
 
@@ -13,13 +15,12 @@ var parsed = fullparser.fullParse(input);
 var ast = parsed.fmap(builder.build);
 
 ast.fmap(function(a) {
-    var state = {'symbols': {}},
-        log = [];
+    var state = new S(),
+        log = new L();
     T.default_traverse(a, state, log);
     console.log('state -- ' + JSON.stringify(state, null, 2));
-    log.map(function(l) {
-        console.log(JSON.stringify(l));
-    });
+    log._issues.map(function(e) { console.log(JSON.stringify(e)); });
+    console.log(JSON.stringify(log._symbol_use, null, 2));
     console.log();
 });
 
