@@ -71,12 +71,26 @@ In clojure, to check if something is a special form, use `special-symbol?`:
 
     (try expr* catch-clause* finally-clause?)
 
+examples:
+
+    (try)
+    (try (throw (new Exception "abc")))
+    (try (throw (new Exception "abc"))
+         (catch RuntimeException e1)
+         (catch Exception e2 e2)
+         (finally (println "hi")))
+
  - subordinate 'special' forms:  only resolved as such inside a `try`, and
    at a particular position inside the `try`:
 
         (catch classname name expr*)
 
         (finally expr*)
+
+ - warning: no exprs
+ - warning: catches without subordinate exprs
+ - warning: finally without a subordinate expr
+ - warning: 0 catches and no finally
 
 ### monitor-enter & monitor-exit ###
 
