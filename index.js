@@ -5,6 +5,7 @@ var fullparser = require('./lib/parser/full'),
     T = require('./lib/treechecker'),
     L = require('./lib/log'),
     S = require('./lib/state'),
+    E = require('./lib/env'),
     builder = require('./lib/astbuilder'),
     fs = require('fs');
 
@@ -16,8 +17,9 @@ var ast = parsed.fmap(builder.build);
 
 ast.fmap(function(a) {
     var state = new S(),
-        log = new L();
-    T.default_traverse(a, state, log);
+        log = new L(),
+        env = new E();
+    T.default_traverse(a, state, log, env);
     console.log('state -- ' + JSON.stringify(state, null, 2));
     log._issues.map(function(e) { console.log(JSON.stringify(e)); });
     console.log(JSON.stringify(log._symbol_use, null, 2));
