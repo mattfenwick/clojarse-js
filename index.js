@@ -1,25 +1,21 @@
 'use strict';
 
-var fullparser = require('./lib/parser/full'),
+var FP = require('./lib/parser/full'),
     D = require('./lib/astdumper'),
-    T = require('./lib/treechecker'),
-    L = require('./lib/log'),
-    S = require('./lib/state'),
-    E = require('./lib/env'),
-    builder = require('./lib/astbuilder'),
+    T = require('./lib/simpletree/checker'),
+    B = require('./lib/astbuilder'),
     fs = require('fs');
 
 
 var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
-var parsed = fullparser.fullParse(input);
-var ast = parsed.fmap(builder.build);
+var parsed = FP.fullParse(input);
+var ast = parsed.fmap(B.build);
 
 ast.fmap(function(a) {
-    var state = new S(),
-        log = new L(),
-        env = new E();
-    T.default_traverse(a, state, log, env);
+    var out = T.default_traverse(a),
+        state = out[0],
+        log = out[1]; 
     console.log('state -- ' + JSON.stringify(state, null, 2));
     log._issues.map(function(e) { console.log(JSON.stringify(e)); });
     console.log(JSON.stringify(log._symbol_use, null, 2));
