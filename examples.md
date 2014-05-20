@@ -18,7 +18,7 @@ no:
 
     +
 
-### Symbol ###
+### Ident ###
 
 ### Character ###
 

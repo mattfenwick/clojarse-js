@@ -39,13 +39,13 @@ for what is considered to be a digit.
    - first: `/\d/`
    - rest: `(not1  ( whitespace  |  macro ) )(*)`
 
-### Symbol ###
+### Ident ###
 
    - first:  `(not1  ( whitespace  |  macro ) )  |  '%'`
    - rest:  `(not1  ( whitespace  |  terminatingMacro ))(*)`
 
 Why does this include `%...`?  
-Because: outside of a `#()` function, `%...` is just a normal symbol.
+Because: outside of a `#()` function, `%...` is just a normal ident.
 
 ### Character ###
 
@@ -184,7 +184,7 @@ between tokens.
 
 ### Form ###
 
-     String  |  Number  |  Char  |  Symbol  |  Regex     |
+     String  |  Number  |  Char  |  Ident   |  Regex     |
      List    |  Vector  |  Set   |  Table   |  Function  |
      Deref   |  Quote   |  Unquote  |  UnquoteSplicing   |
      SyntaxQuote  |  Meta  |  Eval  |  Var
@@ -192,7 +192,7 @@ between tokens.
 Order in which they're tried does seem to be important for some cases, since
 a given input might match multiple patterns:
 
-  - Number before Symbol
+  - Number before Ident
 
 ### Clojure ###
 
@@ -202,7 +202,7 @@ a given input might match multiple patterns:
 
 # Token parsers #
 
-Goal of this phase: determine the internal structure of the number, symbol,
+Goal of this phase: determine the internal structure of the number, ident,
 char, string, and regex tokens
 
 ## String ##
@@ -333,7 +333,7 @@ Notes
         - what about unprintable characters?
 
 
-## Symbol ##
+## Ident ##
 
 Syntax
 

@@ -17,7 +17,7 @@ Just make sure the right amount of text is matched for each token.
 
 # Token parsing #
 
-Goal: determine the internal structure of the number, symbol,
+Goal: determine the internal structure of the number, ident,
 char, string, and regex tokens
 
 
@@ -139,5 +139,5 @@ does implement IMeta:
 Breaking these isn't illegal, but may indicate an error even if the syntax is okay,
 or may cause an undetected error which confusingly doesn't show up until later:
 
-  - string, regex, number, symbol, char followed by whitespace
+  - string, regex, number, ident, char followed by whitespace
 

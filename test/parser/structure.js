@@ -61,3 +61,21 @@ module("parser/structure/number", function() {
     });
 });
 
+module("parser/structure/ident", function() {
+    var cases = [
+        ['x ', 'x'],
+        [':x,', ':x'],
+        ['::x\t', '::x'],
+        ['%234\n', '%234'],
+        ["x'#%[]", "x'#%"]
+    ];
+    cases.map(function(c) {
+        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
+            var parsed = S.parse(c[0]);
+            deepEqual(parsed.status, 'success');
+            deepEqual(parsed.value.body[0]._name, 'ident');
+            deepEqual(parsed.value.body[0].value, c[1]);
+        });
+    });
+});
+
