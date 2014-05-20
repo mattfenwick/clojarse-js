@@ -18,7 +18,8 @@ ast.fmap(function(a) {
         log = out[1]; 
     console.log('state -- ' + JSON.stringify(state, null, 2));
     log._issues.map(function(e) { console.log(JSON.stringify(e)); });
-    console.log(JSON.stringify(log._symbol_use, null, 2));
+    console.log('node types -- ' + JSON.stringify(log.node_types, null, 2));
+    console.log('symbol use -- ' + JSON.stringify(log._symbol_use, null, 2));
     console.log();
 });
 
