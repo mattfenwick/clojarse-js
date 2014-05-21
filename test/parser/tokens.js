@@ -75,7 +75,6 @@ module("parser/tokens/float", function() {
     cases.map(function(c) {
         test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
             var p = T.parse_('number', c[0], [1, 1]);
-//            console.log(JSON.stringify(p));
             deepEqual(p.status, 'success');
             deepEqual(p.value, c[1]);
         });
@@ -114,6 +113,54 @@ module("parser/tokens/number errors", function() {
     cases.map(function(c) {
         test('<' + c[0] + '>  ->  ' + c[1], function() {
             var p = T.parse_('number', c[0], [1,1]);
+            deepEqual(p.status, 'error');
+            deepEqual(p.value[p.value.length - 1], c[1]);
+        });
+    });
+});
+
+module("parser/tokens/ident", function() {
+    function ident(type, ns, name) {
+        return {
+            '_name': type, '_state': [1,1], 
+            'ns': ns, 'name': name
+        };
+    }
+    function reserved(value) {
+        return {'_name': 'reserved', '_state': [1,1], 'value': value};
+    }
+    
+    var cases = [
+        ['nil'      , reserved('nil')               ],
+        ['x'        , ident('symbol' , null , 'x'  )],
+        [':x'       , ident('keyword', null , 'x'  )],
+        ['::x'      , ident('autokey', null , 'x'  )],
+        // TODO figure out where the problem is with the following case
+        // I don't understand it
+//        [':///'     , ident('keyword', ''   , '//' )],
+        ['a:/b/c'   , ident('symbol' , 'a:' , 'b/c')]
+    ];
+    cases.map(function(c) {
+        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
+            var p = T.parse_('ident', c[0], [1, 1]);
+            deepEqual(p.status, 'success');
+            deepEqual(p.value, c[1]);
+        });
+    });
+});
+
+module("parser/tokens/ident errors", function() {
+    var cases = [
+        ['x::y',     [':: is illegal in identifiers (except at beginning)', [1,1]] ],
+        [':::x',     [':: is illegal in identifiers (except at beginning)', [1,1]] ],
+        ['///',      ['invalid identifier for mysterious reasons', [1,1]]],
+//        ['::///',    ['', [1,1]]],  // TODO figure this out   
+        ['a/b:/c',   [':/ is sometimes illegal in identifiers', [1,1]]],
+        ['x:',       ['identifier may not end with a :', [1,1]]]
+    ];
+    cases.map(function(c) {
+        test('<' + c[0] + '>  ->  ' + c[1], function() {
+            var p = T.parse_('ident', c[0], [1,1]);
             deepEqual(p.status, 'error');
             deepEqual(p.value[p.value.length - 1], c[1]);
         });
