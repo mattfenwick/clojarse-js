@@ -1,7 +1,7 @@
 {
-  "name": "clolint-js",
+  "name": "clojarse-js",
   "version": "0.0.1",
-  "description": "parsing and linting of Clojure code",
+  "description": "concrete parsing of Clojure code",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -20,18 +20,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mattfenwick/clolint-js.git"
+    "url": "git://github.com/mattfenwick/clojarse-js.git"
   },
   "keywords": [
     "Clojure",
-    "lint",
     "parse",
     "parsing"
   ],
   "author": "Matt Fenwick",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mattfenwick/clolint-js/issues"
+    "url": "https://github.com/mattfenwick/clojarse-js/issues"
   },
-  "homepage": "https://github.com/mattfenwick/clolint-js"
+  "homepage": "https://github.com/mattfenwick/clojarse-js"
 }

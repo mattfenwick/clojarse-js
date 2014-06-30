@@ -1,6 +1,6 @@
 "use strict";
 
-var T = require('../../lib/parser/tokens'),
+var T = require('../lib/tokens'),
     assert = require('assert');
 
 var module = describe,
@@ -8,7 +8,7 @@ var module = describe,
     deepEqual = assert.deepEqual;
 
 
-module("parser/tokens/char", function() {
+module("tokens/char", function() {
     var cases = [
         ['b'        , 'b'        , 'simple'  ],
         ['u0041'    , '0041'     , 'unicode' ],
@@ -28,7 +28,7 @@ module("parser/tokens/char", function() {
     });
 });
 
-module("parser/tokens/integer", function() {
+module("tokens/integer", function() {
     function int(sign, suffix, base, digits) {
         return {
             '_name': 'integer', '_state': [1,1],
@@ -53,7 +53,7 @@ module("parser/tokens/integer", function() {
     });
 });
 
-module("parser/tokens/float", function() {
+module("tokens/float", function() {
     function ex(sign, pow) {
         return {'sign': sign, 'power': pow};
     }
@@ -81,7 +81,7 @@ module("parser/tokens/float", function() {
     });
 });
 
-module("parser/tokens/ratio", function() {
+module("tokens/ratio", function() {
     function ratio(sign, num, den) {
         return {
             '_name': 'ratio', '_state': [1,1], 
@@ -105,7 +105,7 @@ module("parser/tokens/ratio", function() {
     });
 });
 
-module("parser/tokens/number errors", function() {
+module("tokens/number errors", function() {
     var cases = [
         ['01238',   ['octal digit', [1,5]] ],
         ['4/z',     ['denominator', [1,3]] ]
@@ -119,7 +119,7 @@ module("parser/tokens/number errors", function() {
     });
 });
 
-module("parser/tokens/ident", function() {
+module("tokens/ident", function() {
     function ident(type, ns, name) {
         return {
             '_name': type, '_state': [1,1], 
@@ -149,7 +149,7 @@ module("parser/tokens/ident", function() {
     });
 });
 
-module("parser/tokens/ident errors", function() {
+module("tokens/ident errors", function() {
     var cases = [
         ['x::y',     [':: is illegal in identifiers (except at beginning)', [1,1]] ],
         [':::x',     [':: is illegal in identifiers (except at beginning)', [1,1]] ],

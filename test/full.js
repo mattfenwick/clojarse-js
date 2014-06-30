@@ -1,6 +1,6 @@
 "use strict";
 
-var F = require('../../lib/parser/full'),
+var F = require('../lib/full'),
     assert = require('assert');
 
 var module = describe,
@@ -8,7 +8,7 @@ var module = describe,
     deepEqual = assert.deepEqual;
 
 
-module("parser/full", function() {
+module("full", function() {
 
     var inp = '\\b \\u0041 \\backspace \\o101',
         out = F.fullParse(inp);

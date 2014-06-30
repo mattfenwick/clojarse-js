@@ -29,18 +29,6 @@
  
      - get rid of junk attributes from token sub-parsing
  
-### normalize (some/all) token types ###
- 
-   - integers -- `8r77` -> `63`
-   - floats -- ???
-   - ratios -- ???
-   - strings -- `"\u0041"` -> `"A"`
-   - chars -- `\u0041` -> `\A`
-   - regexes -- ???
-   - symbols -- ?? nothing ??
-   - keywords -- ?? nothing ??
-   - auto-keywords -- ?? nothing ??
-
 ### expand built-in reader macros ###
  
    - `#'abc` -> `(var abc)`

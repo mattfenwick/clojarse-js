@@ -1,13 +1,13 @@
 "use strict";
 
-var S = require('../../lib/parser/structure'),
+var S = require('../lib/structure'),
     assert = require('assert');
 
 var module = describe,
     test = it,
     deepEqual = assert.deepEqual;
 
-module("parser/structure/comment and whitespace", function() {
+module("structure/comment and whitespace", function() {
     var cases = [
         ["#! abc \n def", ' abc ', 'comment', S.comment],
         ["; tuv\n xyz", ' tuv', 'comment', S.comment],
@@ -23,7 +23,7 @@ module("parser/structure/comment and whitespace", function() {
     });
 });
 
-module("parser/structure/char", function() {
+module("structure/char", function() {
     var cases = [
         ['\\b', 'b'],
         ['\\b""', 'b'],
@@ -44,7 +44,7 @@ module("parser/structure/char", function() {
     });
 });
 
-module("parser/structure/number", function() {
+module("structure/number", function() {
     var cases = [
         ['4 ', '4'],
         ["+3'x", "+3"],
@@ -61,7 +61,7 @@ module("parser/structure/number", function() {
     });
 });
 
-module("parser/structure/ident", function() {
+module("structure/ident", function() {
     var cases = [
         ['x ', 'x'],
         [':x,', ':x'],

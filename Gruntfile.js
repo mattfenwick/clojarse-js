@@ -47,11 +47,11 @@ module.exports = function(grunt) {
             },
             "lib": {
                 "options": options,
-                "src": ['lib/*.js', 'lib/*/*.js']
+                "src": ['lib/*.js']
             },
             "test": {
                 "options": options,
-                "src": []//['test/*.js', 'test/*/*.js']
+                "src": ['test/*.js']
             }
         }
     });
