@@ -8,24 +8,30 @@ var T = require('./lib/tokens'),
 
 
 function parseCst(input) {
-    var cst = P.parseCst(input);
+    return P.parseCst(input);
 }
 
-function parseAst(cst) {
-    return cst.fmap(B.build);
+function cstToAst(cst) {
+    return B.build(cst);
+}
+
+function parseAst(input) {
+    var cstOrError = parseCst(input);
+    return cstOrError.fmap(cstToAst);
 }
 
 
 module.exports = {
+    // parser modules
     'tokens'    : T,
     'structure' : S,
     'parser'    : P,
-    
+    // ast modules
     'ast'       : A,
     'astbuilder': B,
-    
-    // this seems kind of redundant
+    // convenience functions -- although seems redundant
     'parseCst'  : parseCst,
+    'cstToAst'  : cstToAst,
     'parseAst'  : parseAst
 };
 

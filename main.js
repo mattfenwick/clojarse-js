@@ -6,10 +6,11 @@ var index = require('./index'),
 
 var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
-var cst = index.cst(input),
-    ast = index.ast(input);
+var cstOrError = index.parseCst(input),
+    ast = cstOrError.fmap(index.cstToAst);
 
-var output = ast.fmap(D.dump).mapError(JSON.stringify).value;
+// what about errors?
+var output = ast.fmap(index.ast.dump).mapError(JSON.stringify).value;
 
 process.stdout.write((typeof output === 'string' ? 
                       output :
