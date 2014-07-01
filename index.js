@@ -1,25 +1,31 @@
 'use strict';
 
-var FP = require('./lib/full'),
-    D = require('./lib/astdumper'),
-    B = require('./lib/astbuilder'),
-    fs = require('fs');
+var T = require('./lib/tokens'),
+    S = require('./lib/structure'),
+    P = require('./lib/parser'),
+    A = require('./lib/ast'),
+    B = require('./lib/astbuilder');
 
 
-var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
+function parseCst(input) {
+    var cst = P.parseCst(input);
+}
 
-var parsed = FP.fullParse(input);
-var ast = parsed.fmap(B.build);
-var output = ast.fmap(D.dump).mapError(JSON.stringify).value;
-
-
-// TODO call this from an executable ... which should probably go in another directory or project?
-process.stdout.write((typeof output === 'string' ? 
-                      output :
-                      JSON.stringify(output))   + "\n"); // TODO utf8?
+function parseAst(cst) {
+    return cst.fmap(B.build);
+}
 
 
 module.exports = {
-
+    'tokens'    : T,
+    'structure' : S,
+    'parser'    : P,
+    
+    'ast'       : A,
+    'astbuilder': B,
+    
+    // this seems kind of redundant
+    'parseCst'  : parseCst,
+    'parseAst'  : parseAst
 };
 
