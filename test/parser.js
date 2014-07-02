@@ -8,11 +8,17 @@ var module = describe,
     deepEqual = assert.deepEqual;
 
 
-module("parser", function() {
+module("parser/parseCst", function() {
 
-    var inp = '\\b \\u0041 \\backspace \\o101',
-        out = P.parseCst(inp);
-
+    test("some chars", function() {
+        var inp = '\\b \\u0041 \\backspace \\o101',
+            out = P.parseCst(inp);
+        deepEqual(out.status, 'success');
+        deepEqual(out.value.body.map(function(c) {return c._name;}), 
+                  ['char', 'char', 'char', 'char']);
+        deepEqual(out.value.body.map(function(c) {return c.kind;}),
+                  ['simple', 'unicode', 'long', 'octal']);
+    });
     /*
     test("char", function() {
         deepEqual(out.value.body.length, 4);
