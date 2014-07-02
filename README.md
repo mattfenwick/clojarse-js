@@ -1,5 +1,8 @@
-[clolint-js](http://mattfenwick.github.io/clolint-js/)
+[clojarse-js](http://mattfenwick.github.io/clojarse-js/)
 =================
+
+A pure Javascript library for parsing Clojure code into trees.
+
 
 # Installation #
 
@@ -13,6 +16,12 @@
     console.log(JSON.stringify(c.parseCst('(^a b @c)'), null, 2));
     // now for an AST
     console.log(JSON.stringify(c.parseAst('(^a b @c)'), null, 2));
+
+
+# Caveats #
+
+The goal is to parse a superset of Clojure's syntax.  Therefore, some things
+which clojarse-js parses may be invalid from Clojure's point of view.
 
 
 # Strategy #
