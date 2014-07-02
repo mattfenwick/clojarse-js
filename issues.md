@@ -12,7 +12,14 @@ what I'm currently facing:
 
  - improper chars and chars in strings -- some escapes are disallowed (which ones?)
 
- - parse regexes
+ - parse regexes: use `java.util.regex.Pattern.compile`
+
+ - char octal escape: <= 255
+ 
+ - unicode escape: value can *not* be between u+D800 and u+DFFF
+
+        \uDFFF              ; -> error
+        (first "\uDFFF")    ; -> not an error -- it's okay in strings
 
 
 my mistakes:

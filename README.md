@@ -1,66 +1,53 @@
 [clolint-js](http://mattfenwick.github.io/clolint-js/)
 =================
 
-# Other resources #
+# Installation #
 
- - [the CCW ANTLR grammar](https://github.com/laurentpetit/ccw) 
- - [the Clojure implementation](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LispReader.java)
-
-
-# Structural parsing #
-
-Goal: correctly break input into tokens and hierarchical forms, but don't
-worry about verifying that tokens have the correctly internal structure.
-Just make sure the right amount of text is matched for each token.
+    npm install clojarse-js
 
 
+# Examples #
 
-# Token parsing #
-
-Goal: determine the internal structure of the number, ident,
-char, string, and regex tokens
-
+    var c = require('clojarse-js');
+    console.log(JSON.stringify(c.parseAst('(a b c)')));
 
 
-# Static token constraints #
+# Strategy #
 
-### String ###
-
-octal escape
-
- - value must be less than `8r400` 
-
-### Regex ###
-
- - uses `java.util.regex.Pattern.compile` for definition of accepted input
-
-### Ratio ###
-
-denominator != 0
-
-### Integer ###
-
-custom base: radix must be <= 36, digits must be within range of radix
-
-### Float ###
-
-big decimal overflow/underflow: exponent limited to Java Integer range:
-see http://docs.oracle.com/javase/7/docs/api/java/math/BigDecimal.html#BigDecimal(java.lang.String)
-
-### Symbol ###
-
-### Keyword, auto-keyword ###
-
-### Reserved ###
-
-### Char ###
-
-octal escape
-
- - <= 255
+### parse: structure ###
  
-unicode escape: value can *not* be between u+D800 and u+DFFF
+determine start, end of each hierarchical form and token
+   
+errors possible:  first one will terminate parsing
 
-    \uDFFF              ; -> error
-    (first "\uDFFF")    ; -> not an error -- it's okay in strings
+
+### parse: tokens ###
+
+determine structure of tokens 
+
+errors possible: what should be done with them?
+
+  - omitted from output tree
+    - no evidence of errors in output
+    - perhaps surprising, unexpected results
+  - filled in with default value
+    - will cause incorrect results (i.e. two errors in map keys: duplicate default values)
+  - left in as explicitly marked errors
+    - probably the best choice as it's the most flexible
+    - later traversals will have to take them into account
+
+ 
+### build AST ###
+
+ - expand built-in reader macros
+
+   - `#'abc` -> `(var abc)`
+   - `'qrs` -> `(quote qrs)`
+   - `@abc` -> `(clojure.core/deref abc)`
+   - `~abc` -> `(clojure.core/unquote abc)`
+   - `~@abc` -> `(clojure.core/unquote-splicing abc)`
+
+ - fold metadata into "owner" node
+ 
+ - use ast module for syntax definition
 
