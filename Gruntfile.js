@@ -12,7 +12,7 @@ var options = {
     "forin"         : true,     // Tolerate `for in` loops without `hasOwnPrototype`.
     // "freeze": false,
     "immed"         : true,     // Require immediate invocations to be wrapped in parens e.g. `( function(){}() );`
-    "indent": 4,
+    "indent"        : 4,
     "latedef"       : true,     // Prohibit variable use before definition.
     "newcap"        : true,     // Require capitalization of all constructor functions e.g. `new F()`.
     "noarg"         : true,     // Prohibit use of `arguments.caller` and `arguments.callee`.
@@ -48,11 +48,11 @@ module.exports = function(grunt) {
             "lib": {
                 "options": options,
                 "src": ['lib/*.js']
-            },
+            }/*,
             "test": {
                 "options": options,
                 "src": ['test/*.js']
-            }
+            }*/
         }
     });
 
