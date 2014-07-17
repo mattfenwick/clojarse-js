@@ -31,7 +31,7 @@ module("tokens/char", function() {
 module("tokens/integer", function() {
     function int(sign, suffix, base, digits) {
         return {
-            '_name': 'integer', '_state': [1,1],
+            '_name': 'integer', '_start': [1,1],
             'sign': sign, 'suffix': suffix,
             'base': base, 'digits': digits
         };
@@ -59,7 +59,7 @@ module("tokens/float", function() {
     }
     function float(sign, int, dec, exp, suff) {
         return {
-            '_name': 'float', '_state': [1,1], 
+            '_name': 'float', '_start': [1,1], 
             'sign': sign, 'int': int,
             'decimal': dec, 'suffix': suff, 
             'exponent': exp
@@ -84,7 +84,7 @@ module("tokens/float", function() {
 module("tokens/ratio", function() {
     function ratio(sign, num, den) {
         return {
-            '_name': 'ratio', '_state': [1,1], 
+            '_name': 'ratio', '_start': [1,1], 
             'sign': sign, 'numerator': num,
             'denominator': den 
         };
@@ -122,12 +122,12 @@ module("tokens/number errors", function() {
 module("tokens/ident", function() {
     function ident(type, ns, name) {
         return {
-            '_name': type, '_state': [1,1], 
+            '_name': type, '_start': [1,1], 
             'ns': ns, 'name': name
         };
     }
     function reserved(value) {
-        return {'_name': 'reserved', '_state': [1,1], 'value': value};
+        return {'_name': 'reserved', '_start': [1,1], 'value': value};
     }
     
     var cases = [
