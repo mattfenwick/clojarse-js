@@ -5,7 +5,7 @@ what I'm currently facing:
      modules as well as test modules), might as well factor it out
    description: between the cst -- b/c tree is "cleaned" -- and ast
 
- - would like to have close position for hierarchical forms
+ - would like to have close position in syntax trees
 
  - `#java.lang.String["abc"]` is valid syntax for a call to a java constructor,
    or something defined with deftype or defrecord
