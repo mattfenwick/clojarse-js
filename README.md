@@ -57,3 +57,5 @@ errors possible: will be in output tree
 
  - fold metadata into "owner" node
 
+Errors are not expected -- any errors should represent bugs.
+
