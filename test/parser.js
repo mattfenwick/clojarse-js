@@ -19,6 +19,25 @@ module("parser/parseCst", function() {
         deepEqual(out.value.body.map(function(c) {return c.kind;}),
                   ['simple', 'unicode', 'long', 'octal']);
     });
+    
+    test("token errors", function() {
+        var inp = '4 4&',
+            out = P.parseCst(inp);
+        deepEqual(out.status, 'error');
+        deepEqual(out.value['token errors'].length, 1);
+        deepEqual(out.value.tree.body[1], {'_name': 'token error', 'id': 0});
+    });
+    
+    test("multiple token errors", function() {
+        var inp = '4 4& a::b 5/a',
+            out = P.parseCst(inp);
+        deepEqual(out.status, 'error');
+        deepEqual(out.value['token errors'].length, 3);
+        deepEqual(out.value.tree.body.slice(1), 
+                  [{'_name': 'token error', 'id': 0},
+                   {'_name': 'token error', 'id': 1},
+                   {'_name': 'token error', 'id': 2}]);
+    });
     /*
     test("char", function() {
         deepEqual(out.value.body.length, 4);
