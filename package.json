@@ -16,7 +16,7 @@
     "mocha": "1.18.2"
   },
   "scripts": {
-    "test": "mocha --reporter spec test/ test/parser"
+    "test": "mocha --reporter spec test/"
   },
   "repository": {
     "type": "git",
