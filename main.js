@@ -7,14 +7,20 @@ var index = require('./index'),
 var input = fs.readFileSync('/dev/stdin', {'encoding': 'utf8'});
 
 var cstOrError = index.parseCst(input),
-    ast = cstOrError.fmap(index.cstToAst);
+    tree;
 
-// what about errors?
-var output = ast.fmap(index.ast.dump).mapError(JSON.stringify).value;
+if ( process.argv[2] === 'cst' ) {
+    tree = cstOrError.fmap(JSON.stringify);
+} else if ( process.argv[2] !== undefined ) {
+    throw new Error('invalid arg -- can only be "cst": was ' + process.argv[2]);
+} else {
+    tree = cstOrError.fmap(index.cstToAst)
+                     .fmap(index.ast.dump);
+}
 
-process.stdout.write((typeof output === 'string' ? 
-                      output :
-                      JSON.stringify(output))   + "\n"); // TODO utf8?
+var output = tree.mapError(JSON.stringify).value;
+
+process.stdout.write(output + "\n"); // TODO utf8?
 
 
 module.exports = {
