@@ -1,6 +1,6 @@
 {
   "name": "clojarse-js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "concrete parsing of Clojure code",
   "main": "index.js",
   "directories": {
