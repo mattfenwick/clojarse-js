@@ -18,7 +18,8 @@ if ( process.argv[2] === 'cst' ) {
                      .fmap(index.ast.dump);
 }
 
-var output = tree.mapError(JSON.stringify).value;
+var o1 = tree.mapError(function(x) {return JSON.stringify(x, null, 2);}),
+    output = o1.value;
 
 process.stdout.write(output + "\n"); // TODO utf8?
 
