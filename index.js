@@ -1,14 +1,12 @@
 'use strict';
 
-var T = require('./lib/tokens'),
-    S = require('./lib/structure'),
-    P = require('./lib/parser'),
+var S = require('./lib/structure'),
     A = require('./lib/ast'),
     B = require('./lib/astbuilder');
 
 
 function parseCst(input) {
-    return P.parseCst(input);
+    return S.parse(input);
 }
 
 function cstToAst(cst) {
@@ -23,9 +21,7 @@ function parseAst(input) {
 
 module.exports = {
     // parser modules
-    'tokens'    : T,
     'structure' : S,
-    'parser'    : P,
     // ast modules
     'ast'       : A,
     'astbuilder': B,
