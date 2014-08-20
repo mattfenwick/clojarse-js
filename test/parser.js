@@ -135,24 +135,6 @@ module("parser/number", function() {
     });
 });
 
-module("parser/ident", function() {
-    var cases = [
-        ['x ', 'x'],
-        [':x,', ':x'],
-        ['::x\t', '::x'],
-        ['%234\n', '%234'],
-        ["x'#%[]", "x'#%"]
-    ];
-    cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
-            var parsed = P.parse(c[0]);
-            deepEqual(parsed.status, 'success');
-            deepEqual(parsed.value.body[0]._name, 'ident');
-            deepEqual(parsed.value.body[0].value, c[1]);
-        });
-    });
-});
-
 module("parser/char", function() {
     var cases = [
         ['b'        , 'b'        , 'simple'  ],
@@ -266,33 +248,38 @@ module("parser/number errors", function() {
 });
 
 module("parser/ident", function() {
-    function ident(type, ns, name, end) {
-        return {
-            '_name': type, '_start': [1,1], 
-            'ns': ns, 'name': name,
-            '_end': end
-        };
-    }
-    function reserved(value, end) {
-        return {'_name': 'reserved', '_start': [1,1], 'value': value, '_end': end};
-    }
-    
     var cases = [
-        ['nil'      , reserved('nil', [1,4])            ],
-        ['x'        , ident('symbol' , null, 'x', [1,2])],
-        [':x'       , ident('keyword', null, 'x', [1,3])],
-        ['::x'      , ident('autokey', null, 'x', [1,4])],
+        ['x '           , 'symbol'       , [1,2]],
+        [':x,'          , 'keyword'      , [1,3]],
+        ['::x\t'        , 'autokey'     , [1,4]],
+        ['%234\n'       , 'symbol'    , [1,5]],
+        ["x'#%[]"       , "symbol"    , [1,5]],
+        ['x/y '         , 'symbol'  , [1,4]],
+        [':x/y '        , 'keyword' , [1,5]],
+        ['::x/y '       , 'autokey' , [1,6]],
         // TODO figure out where the problem is with the following case
         // I don't understand it
 //        [':///'     , ident('keyword', ''   , '//' )],
-        ['a:/b/c'   , ident('symbol' , 'a:' , 'b/c', [1,7])]
+        ['a:/b/c '     , 'symbol' , [1,7]]
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
-            var p = P.parse(c[0]);
+        test(c[0], function() {
+            var p = P.form.parse(c[0], [1,1]).fmap(function(x) {return x.result;});
             deepEqual(p.status, 'success');
-            deepEqual(p.value, c[1]);
+            deepEqual(p.value._name, 'ident');
+            deepEqual(p.value.value._name, 'name');
+            deepEqual(p.value.value.type, c[1]);
+            deepEqual(p.value._end, c[2]);
         });
+    });
+    test('reserved', function() {
+        var p = P.form.parse('nil ', [1,1]);
+        deepEqual(p.status, 'success');
+        var v = p.value.result;
+        deepEqual(v._name, 'ident');
+        deepEqual(v.value._name, 'reserved');
+        deepEqual(v.value.value, 'nil');
+        deepEqual(v._end, [1,4]);
     });
 });
 
