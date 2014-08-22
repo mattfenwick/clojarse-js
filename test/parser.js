@@ -181,54 +181,65 @@ module("parser/integer", function() {
     });
 });
 
+function parseForm(str) {
+    return P.form.parse(str, [1, 1]).fmap(function(x) {
+        return x.result;
+    });
+}
+
 module("parser/float", function() {
-    function ex(sign, pow) {
-        return {'sign': sign, 'power': pow};
-    }
-    function float(sign, int, dec, exp, suff, end) {
-        return {
-            '_name': 'float', '_start': [1,1], 
-            'sign': sign, 'int': int,
-            'decimal': dec, 'suffix': suff, 
-            'exponent': exp, '_end': end
-        };
-    }
     var cases = [
-        ['4M'           , float(null, '4', '', null, 'M', [1,3])               ],
-        ['-0.'          , float('-', '0', '', null, null, [1,4])               ],
-        ['18e37'        , float(null, '18', '', ex(null, '37'), null, [1,6])   ],
-        ['+875.623e-22M', float('+', '875', '623', ex('-', '22'), 'M', [1,14]) ],
-        ['01238M'       , float(null, '01238', '', null, 'M', [1,7])           ]
+        ['4M'           , null, '4'    , null , null        , 'M' , [1,3] ],
+        ['-0.'          , '-' , '0'    , ''   , null        , null, [1,4] ],
+        ['18e37'        , null, '18'   , null , [null, '37'], null, [1,6] ],
+        ['+875.623e-22M', '+' , '875'  , '623', ['-', '22'] , 'M' , [1,14]],
+        ['01238M'       , null, '01238', null , null        , 'M' , [1,7] ]
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
-            var p = P.parse(c[0]);
+        test(c[0], function() {
+            var p = parseForm(c[0]);
             deepEqual(p.status, 'success');
-            deepEqual(p.value, c[1]);
+            var v = p.value;
+            deepEqual(v.sign, c[1]);
+            deepEqual(v._name, 'number');
+            deepEqual(v.number._name, 'float');
+            deepEqual(v.number.int, c[2].split(''));
+            if ( c[3] !== null ) {
+                deepEqual(v.number.decimal.int, c[3].split(''));
+            } else {
+                deepEqual(v.number.decimal, null);
+            }
+            if ( c[4] !== null ) {
+                deepEqual(v.number.exponent.sign, c[4][0]);
+                deepEqual(v.number.exponent.power, c[4][1].split(''));
+            } else {
+                deepEqual(v.number.exponent, null);
+            }
+            deepEqual(v.number.suffix, c[5]);
+            deepEqual(v._end, c[6]);
         });
     });
 });
 
 module("parser/ratio", function() {
-    function ratio(sign, num, den, end) {
-        return {
-            '_name': 'ratio', '_start': [1,1], 
-            'sign': sign, 'numerator': num,
-            'denominator': den, '_end': end
-        };
-    }
     var cases = [
-        ['0/0'      , ratio(null, '0', '0', [1,4])     ],
-        ['01238/1'  , ratio(null, '01238', '1', [1,8]) ],
-        ['-198/202' , ratio('-', '198', '202', [1,9])  ],
-        ['+18/34'   , ratio('+', '18', '34', [1,7])    ]
+        ['0/0'      , null, '0'     , '0', [1,4]  ],
+        ['01238/1'  , null, '01238' , '1', [1,8]  ],
+        ['-198/202' , '-', '198'    , '202', [1,9]],
+        ['+18/34'   , '+', '18'     , '34', [1,7] ]
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
-            var p = P.parse(c[0]);
+        test(c[0], function() {
+            var p = parseForm(c[0]);
 //            console.log(JSON.stringify(p));
             deepEqual(p.status, 'success');
-            deepEqual(p.value, c[1]);
+            var v = p.value;
+            deepEqual(v._name, 'number');
+            deepEqual(v.sign, c[1]);
+            deepEqual(v.number.numerator, c[2].split(''));
+            deepEqual(v.number.denominator, c[3].split(''));
+            deepEqual(v.number._name, 'ratio');
+            deepEqual(v._end, c[4]);
         });
     });
 });
@@ -264,7 +275,7 @@ module("parser/ident", function() {
     ];
     cases.map(function(c) {
         test(c[0], function() {
-            var p = P.form.parse(c[0], [1,1]).fmap(function(x) {return x.result;});
+            var p = parseForm(c[0]);
             deepEqual(p.status, 'success');
             deepEqual(p.value._name, 'ident');
             deepEqual(p.value.value._name, 'name');
