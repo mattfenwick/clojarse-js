@@ -12,31 +12,25 @@ module("parser/parseCst", function() {
 
     test("some chars", function() {
         var inp = '\\b \\u0041 \\backspace \\o101',
-            out = P.parseCst(inp);
+            out = P.parse(inp);
         deepEqual(out.status, 'success');
-        deepEqual(out.value.body.map(function(c) {return c._name;}), 
+        deepEqual(out.value.forms.map(function(c) {return c._name;}), 
                   ['char', 'char', 'char', 'char']);
-        deepEqual(out.value.body.map(function(c) {return c.kind;}),
+        deepEqual(out.value.forms.map(function(c) {return c.value._name;}),
                   ['simple', 'unicode', 'long', 'octal']);
     });
     
-    test("token errors", function() {
-        var inp = '4 4&',
-            out = P.parseCst(inp);
-        deepEqual(out.status, 'error');
-        deepEqual(out.value['token errors'].length, 1);
-        deepEqual(out.value.tree.body[1], {'_name': 'token error', 'id': 0});
-    });
-    
     test("multiple token errors", function() {
-        var inp = '4 4& a::b 5/a',
-            out = P.parseCst(inp);
-        deepEqual(out.status, 'error');
-        deepEqual(out.value['token errors'].length, 3);
-        deepEqual(out.value.tree.body.slice(1), 
-                  [{'_name': 'token error', 'id': 0},
-                   {'_name': 'token error', 'id': 1},
-                   {'_name': 'token error', 'id': 2}]);
+        var cases = ['4&', '5/a'];
+        cases.map(function(c) {
+            var out = P.parse(c);
+            deepEqual(out.status, 'error');
+//            deepEqual(out.value['token errors'].length, 3);
+//            deepEqual(out.value.tree.body.slice(1), 
+//                      [{'_name': 'token error', 'id': 0},
+//                       {'_name': 'token error', 'id': 1},
+//                       {'_name': 'token error', 'id': 2}]);
+       });
     });
     /*
     test("char", function() {
@@ -99,84 +93,52 @@ module("parser/comment and whitespace", function() {
 
 module("parser/char", function() {
     var cases = [
-        ['\\b', 'b'],
-        ['\\b""', 'b'],
-        ['\\  ', ' '],
-        ['\\\t ', '\t'],
-        ['\\\n,', '\n'],
-        ['\\blarghabag ', 'blarghabag'],
-        ['\\u123~[]', 'u123'],
-        ["\\a#'%{}", "a#'%", "only terminating macros and whitespace end a char"]
+        ['\\b'          , 'simple', 'b'     , [1,3]],
+        ['\\b""'        , 'simple', 'b'     , [1,3]],
+        ['\\  '         , 'simple', ' '     , [1,3]],
+        ['\\\t '        , 'simple', '\t'    , [1,3]],
+        ['\\\n,'        , 'simple', '\n'    , [2,1]],
+        ['\\blarghabag ', 'long'  , 'blarghabag', [1,12]],
+        ['\\u1234~[]'   , 'unicode','1234'  , [1,7]],
+        ['\\o123'       , 'octal' , '123'   , [1,6]],
+//        ["\\a#'%{}"     , "a#'%", "only terminating macros and whitespace end a char"]
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
-            var parsed = P.parse(c[0]);
+        test(c[0], function() {
+            var parsed = parseForm(c[0]);
             deepEqual(parsed.status, 'success');
-            deepEqual(parsed.value.body[0]._name, 'char');
-            deepEqual(parsed.value.body[0].value, c[1]);
-        });
-    });
-});
-
-module("parser/number", function() {
-    var cases = [
-        ['4 ', '4'],
-        ["+3'x", "+3"],
-        ['-2xyz#{}', '-2xyz', 'ended by whitespace and macros'],
-        ['8????()', '8????']
-    ];
-    cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
-            var parsed = P.parse(c[0]);
-            deepEqual(parsed.status, 'success');
-            deepEqual(parsed.value.body[0]._name, 'number');
-            deepEqual(parsed.value.body[0].value, c[1]);
-        });
-    });
-});
-
-module("parser/char", function() {
-    var cases = [
-        ['b'        , 'b'        , 'simple'  ],
-        ['u0041'    , '0041'     , 'unicode' ],
-        ['backspace', 'backspace', 'long'    ],
-        ['o101'     , '101'      , 'octal'   ],
-        ['o10'      , '10'       , 'octal'   ],
-        ['o7'       , '7'        , 'octal'   ]
-    ];
-    cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + c[1] + '>', function() {
-            var p = P.parse(c[0]);
-            deepEqual(p.status, 'success');
-            deepEqual(p.value._name, 'char');
-            deepEqual(p.value.value, c[1]);
-            deepEqual(p.value.kind, c[2]);
+            var v = parsed.value;
+            deepEqual(v._name, 'char');
+            deepEqual(v.value._name, c[1]);
+            deepEqual(v._end, c[3]);
         });
     });
 });
 
 module("parser/integer", function() {
-    function int(sign, suffix, base, digits, end) {
-        return {
-            '_name': 'integer', '_start': [1,1],
-            'sign': sign, 'suffix': suffix,
-            'base': base, 'digits': digits,
-            '_end': end
-        };
-    }
     var cases = [
-        ['0xdefN'   , int(null, 'N', 16, 'def', [1,7])     ],
-        ['-077'     , int('-', null, 8, '77', [1,5])       ],
-        ['+123'     , int('+', null, 10, '123', [1,5])     ],
-        ['0'        , int(null, null, 10, '0', [1,2])      ],
-        ['36r123zZ' , int(null, null, 36, '123zZ', [1,9])  ],
-        ['40r888'   , int(null, null, 40, '888', [1,7])    ]
+        ['0xdefN'   , null, 'base16', 'N' , 16, 'def'  , [1,7] ],
+        ['-077'     , '-' , 'base8' , null, 8 , '77'   , [1,5] ],
+        ['+123'     , '+' , 'base10', null, 10, '123'  , [1,5] ],
+        ['0'        , null, 'zero'  , null, 10, '0'    , [1,2] ],
+        ['36r123zZ' , null, 'baseN' , null, 36, '123zZ', [1,9] ],
+        ['40r888'   , null, 'baseN' , null, 40, '888'  , [1,7] ]
     ];
     cases.map(function(c) {
-        test('<' + c[0] + '>  ->  <' + JSON.stringify(c[1]) + '>', function() {
-            var p = P.parse(c[0]);
+        test(c[0], function() {
+            var p = parseForm(c[0]);
             deepEqual(p.status, 'success');
-            deepEqual(p.value, c[1]);
+            var v = p.value;
+            deepEqual(v._name, 'number');
+            deepEqual(v.sign, c[1]);
+            var i = v.number;
+            deepEqual(i._name, 'integer');
+            deepEqual(i.suffix, c[3]);
+            deepEqual(i.value._name, c[2]);
+            // TODO test the rest of the fields
+//            deepEqual(v.base, c[3]);
+//            deepEqual(v.digits, c[4]);
+//            deepEqual(v._end, c[5]);
         });
     });
 });
@@ -246,7 +208,7 @@ module("parser/ratio", function() {
 
 module("parser/number errors", function() {
     var cases = [
-        ['01238',   ['octal digit', [1,5]] ],
+        ['01238',   ['illegal following character', [1,5]] ],
         ['4/z',     ['denominator', [1,3]] ]
     ];
     cases.map(function(c) {

@@ -12,7 +12,7 @@ var module = describe,
 module("astbuilder", function() {
 
     test("simple", function() {
-        var cst = P.parseCst('(a b)'),
+        var cst = P.parse('(a b)'),
             ast = B.build(cst.value),
             fst = ast.elems[0];
         deepEqual(fst.type, 'list');
@@ -24,7 +24,7 @@ module("astbuilder", function() {
     });
 
     test("expand reader macros", function() {
-        var cst = P.parseCst('@x ~y'),
+        var cst = P.parse('@x ~y'),
             ast = B.build(cst.value),
             fst = ast.elems[0],
             snd = ast.elems[1];
@@ -40,7 +40,7 @@ module("astbuilder", function() {
     });
     
     test("metadata", function() {
-        var cst = P.parseCst('^ outer ^ inner z'),
+        var cst = P.parse('^ outer ^ inner z'),
             ast = B.build(cst.value),
             fst = ast.elems[0];
         deepEqual(fst.name, 'z');
