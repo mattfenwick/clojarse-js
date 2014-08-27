@@ -27,8 +27,12 @@ Set.prototype.keys = function() {
     return this.dict.keys();
 };
 
-Set.prototype.dump = function() {
-    return {'type': 'set', 'elements': Object.key(this.dict.table)};
+Set.prototype.toJSON = function() {
+    return {'type': 'Set', 'elements': this.keys()};
+};
+
+Set.prototype.toString = function() {
+    return JSON.stringify(this.toJSON());
 };
 
 
